@@ -14,7 +14,18 @@ article_status: published
 
 从项目开发中提炼可复用函数、组件和工程能力。每项能力都需要清晰契约、可搜索注释、独立测试与使用示例，通过 MR（GitHub Pull Request）提交。
 
-已新增桌面基础能力包，代码通过 PR 审阅交付；分支上的实现不代表已合并、发布或完成接入项目验收。
+桌面基础能力包已收录到默认分支。包发布与接入项目验收分别进行，具体依据见包内验证记录。
+
+[运行 Demo](demo/README.md) · [Wiki](wiki/Home.md) · [文档中心](docs/README.md)
+
+```bash
+# 在仓库根目录，使用 Python >= 3.11
+python -m pip install ./packages/python/desktop
+python demo/run.py --list
+python demo/run.py desktop-core
+```
+
+交互展示、后台搜索和无显示器 smoke 的安装与命令见 [Demo 运行入口](demo/README.md)。
 
 | 能力包 | 内容 | 入口 |
 | --- | --- | --- |

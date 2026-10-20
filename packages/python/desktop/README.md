@@ -1,5 +1,7 @@
 # Desktop 可复用基础能力包
 
+[仓库 Demo](../../../demo/README.md) · [Wiki](../../../wiki/Home.md) · [文档中心](../../../docs/README.md)
+
 安装保留 `ctf_desktop` 导入路径。本目录是独立可安装包，仓库根目录不作为 Python 包安装。无界面模块只依赖标准库；Qt 和 pyserial 按需安装。
 
 ```bash
@@ -21,6 +23,8 @@ QT_QPA_PLATFORM=offscreen python packages/python/desktop/examples/desktop_demo.p
 面向 Python 3.11 与 PyQt5 桌面应用的可组合基础能力。仓库只提供通用机制；字段、权限规则、报表模板、设备协议、数据库表结构和发布配置由接入项目提供。
 
 ## 安装
+
+以下命令在本包目录 `packages/python/desktop` 执行；仓库根目录安装使用上面的完整路径。
 
 ```bash
 python -m pip install -e '.[qt,serial]'

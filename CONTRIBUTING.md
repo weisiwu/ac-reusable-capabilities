@@ -64,3 +64,5 @@ MR 对应 GitHub Pull Request。复用代码通过任务分支提交，不直接
 统一遵循 [目录与收录规则](docs/目录与收录规则.md)。实现进入 `packages/<language>/<domain>`，按语言和能力领域组织，不按来源项目复制目录。`catalog.json` 是跨包检索入口；包内按职责拆模块。
 
 新增或扩展时同步能力索引、公开契约、测试、示例和来源记录。既有能力优先复用或兼容扩展，新增独立包需要明确边界和独立版本理由。提交前运行 `python scripts/check_catalog.py` 和受影响包验证。
+
+新增能力的跨包文档、Demo 和 Wiki 同步要求见 [收录流程](docs/能力收录流程.md)。示例代码保留包内，根 `demo/` 只做发现和启动；同步清单后执行 `python demo/run.py --check`，并实际运行受影响例子。
