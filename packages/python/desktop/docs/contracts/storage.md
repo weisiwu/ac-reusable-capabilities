@@ -12,19 +12,19 @@ article_status: published
 
 # desktop.storage
 
-导入路径：`ctf_desktop.storage`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.storage`。场景接入见 [使用指南](../guides/storage.md)。
 
 ## Migration
 
 稳定标识：`desktop.storage.Migration`
 
-Immutable positive version and SQLite callback; callbacks must not commit/executescript or manage transactions; schema is host-owned.
+Immutable positive integer version (bool rejected) and callable SQLite migration; invalid spec raises ValueError; callbacks must not commit, executescript or manage transactions.
 
 ## SqliteStore
 
 稳定标识：`desktop.storage.SqliteStore`
 
-Own one same-thread plaintext SQLite connection; create parent directory; no SQLCipher, key handling, process locks or downgrade support.
+Own one same-thread plaintext SQLite connection; creates parent directory; with connects and always closes without implicit commit; no SQLCipher or key management.
 
 ## SqliteStore.connect
 
@@ -48,7 +48,7 @@ Sort unique positive versions; run newer callbacks in BEGIN IMMEDIATE and update
 
 稳定标识：`desktop.storage.SqliteStore.backup`
 
-Return new snapshot Path after backup API and integrity check; reject existing/live destination; RuntimeError on pending writes to avoid self-blocking; close temporary handles, remove staging file on failure.
+Return new consistent SQLite snapshot Path; reject existing/live target and pending writes; atomic no-overwrite publication via same-filesystem hard link, with no unsafe fallback; remove staging and close handles on every exit.
 
 ## SqliteStore.restore
 

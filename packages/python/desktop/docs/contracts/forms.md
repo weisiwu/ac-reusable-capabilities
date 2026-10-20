@@ -8,11 +8,12 @@ updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
+required_extra: qt
 ---
 
 # desktop.forms
 
-导入路径：`ctf_desktop.forms`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.forms`。场景接入见 [使用指南](../guides/forms.md)。
 
 ## FieldSpec
 
@@ -30,7 +31,7 @@ Return field-key to error-text mapping for required/host validator failures; fal
 
 稳定标识：`desktop.forms.FormDialog`
 
-GUI-thread dialog with caller title/fields/initial values; submitted(dict) only on valid save then accepts; failed validation retains dialog with errors; cancel rejects.
+GUI-thread form with unique nonempty keys; preserve zero/false initial text; submitted(dict) on valid save; callback exceptions emit validation_failed(error) and keep dialog open; cancel rejects.
 
 ## FormDialog.values
 

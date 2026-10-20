@@ -15,7 +15,7 @@ class CrudRepository(Protocol):
     @ac-contract Host-owned list/get/create/update/delete protocol; transaction and identity semantics belong to the host.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     def list_page(self, request: PageRequest, filters: Mapping[str, Any]) -> PageResult:
         """Return PageResult for PageRequest and filter mapping; host owns filtering and IO errors.
@@ -27,7 +27,7 @@ class CrudRepository(Protocol):
         @ac-contract Return PageResult for PageRequest and filter mapping; host owns filtering and IO errors.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def get(self, identity: Any) -> Mapping[str, Any] | None:
@@ -40,7 +40,7 @@ class CrudRepository(Protocol):
         @ac-contract Return record mapping or None for identity; host owns IO errors.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def create(self, values: Mapping[str, Any]) -> Any:
@@ -53,7 +53,7 @@ class CrudRepository(Protocol):
         @ac-contract Persist supplied mapping and return its identity; host owns transaction/errors.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def update(self, identity: Any, values: Mapping[str, Any]) -> None:
@@ -66,7 +66,7 @@ class CrudRepository(Protocol):
         @ac-contract Update identity using values and return None; host defines missing-row behavior.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def delete(self, identity: Any) -> None:
@@ -79,7 +79,7 @@ class CrudRepository(Protocol):
         @ac-contract Delete identity and return None; host defines missing-row behavior.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
 
@@ -94,7 +94,7 @@ class CrudController:
     @ac-contract Require repository and explicit authorization callback; optional validation/change callbacks; no UI or persistence implementation.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
 
     def __init__(
@@ -120,7 +120,7 @@ class CrudController:
         @ac-contract Authorize list before repository access; None filters become empty mapping; return PageResult; errors propagate.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self.authorize("list", None)
         return self.repository.list_page(request, filters or {})
@@ -135,7 +135,7 @@ class CrudController:
         @ac-contract Authorize read on identity before repository get; return mapping or None; errors propagate.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self.authorize("read", identity)
         return self.repository.get(identity)
@@ -150,7 +150,7 @@ class CrudController:
         @ac-contract Authorize create, validate, write then notify changed; return identity; errors propagate; notification failure cannot roll back host write.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self.authorize("create", None)
         self.validate(values)
@@ -168,7 +168,7 @@ class CrudController:
         @ac-contract Authorize update, validate, write then notify changed; return None; errors propagate, no implicit transaction.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self.authorize("update", identity)
         self.validate(values)
@@ -185,7 +185,7 @@ class CrudController:
         @ac-contract Authorize delete before write then notify changed; return None; errors propagate, no implicit transaction.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/crud.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self.authorize("delete", identity)
         self.repository.delete(identity)

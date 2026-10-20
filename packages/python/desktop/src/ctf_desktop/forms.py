@@ -21,7 +21,7 @@ class FieldSpec:
     @ac-contract Immutable field key/label; text default, required false; supports multiline/integer/boolean/choice/custom; custom requires factory and reader; invalid kind raises ValueError.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/forms.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     key: str
     label: str
@@ -49,7 +49,7 @@ def validate_values(fields: Sequence[FieldSpec], values: Mapping[str, Any]) -> d
     @ac-contract Return field-key to error-text mapping for required/host validator failures; false and zero are valid required values; validator exceptions propagate; no writes.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/forms.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     errors = {}
     for field in fields:
@@ -64,23 +64,26 @@ def validate_values(fields: Sequence[FieldSpec], values: Mapping[str, Any]) -> d
 
 
 class FormDialog(QDialog):
-    """GUI-thread dialog with caller title/fields/initial values; submitted(dict) only on valid save then accepts; failed validation retains dialog with errors; cancel rejects.
+    """GUI-thread form with unique nonempty keys; preserve zero/false initial text; submitted(dict) on valid save; callback exceptions emit validation_failed(error) and keep dialog open; cancel rejects.
 
     @ac-reusable
     @ac-capability desktop.forms.FormDialog
     @ac-kind component
     @ac-tags desktop, forms, FormDialog
-    @ac-contract GUI-thread dialog with caller title/fields/initial values; submitted(dict) only on valid save then accepts; failed validation retains dialog with errors; cancel rejects.
+    @ac-contract GUI-thread form with unique nonempty keys; preserve zero/false initial text; submitted(dict) on valid save; callback exceptions emit validation_failed(error) and keep dialog open; cancel rejects.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/forms.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     submitted = pyqtSignal(dict)
+    validation_failed = pyqtSignal(object)
 
     def __init__(self, title: str, fields: Sequence[FieldSpec], initial=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.fields = tuple(fields)
+        if any(not field.key for field in self.fields) or len({field.key for field in self.fields}) != len(self.fields):
+            raise ValueError("field keys must be nonempty and unique")
         self._widgets: dict[str, QWidget] = {}
         initial = initial or {}
         form = QFormLayout()
@@ -102,7 +105,7 @@ class FormDialog(QDialog):
             return field.widget_factory(value)
         if field.kind == "multiline":
             widget = QPlainTextEdit(self)
-            widget.setPlainText(str(value or ""))
+            widget.setPlainText("" if value is None else str(value))
         elif field.kind == "integer":
             widget = QSpinBox(self)
             widget.setRange(-2_147_483_648, 2_147_483_647)
@@ -121,7 +124,7 @@ class FormDialog(QDialog):
                 widget.setCurrentIndex(index)
         else:
             widget = QLineEdit(self)
-            widget.setText(str(value or ""))
+            widget.setText("" if value is None else str(value))
         return widget
 
     def values(self) -> dict[str, Any]:
@@ -134,7 +137,7 @@ class FormDialog(QDialog):
         @ac-contract Read current fields to new mapping; text stripped, choice returns data, integer/bool preserve types; custom reader errors propagate.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/forms.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         values = {}
         for field in self.fields:
@@ -155,8 +158,13 @@ class FormDialog(QDialog):
         return values
 
     def _submit(self) -> None:
-        values = self.values()
-        errors = validate_values(self.fields, values)
+        try:
+            values = self.values()
+            errors = validate_values(self.fields, values)
+        except Exception as error:
+            self.error_label.setText("校验失败，请重试或联系应用维护者")
+            self.validation_failed.emit(error)
+            return
         if errors:
             self.error_label.setText("；".join(f"{key}: {message}" for key, message in errors.items()))
             return
@@ -174,7 +182,7 @@ class DetailView(QWidget):
     @ac-contract GUI-thread read-only labels for provided fields/values; None displays empty text, others stringify; parent owns widget lifetime.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/forms.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     def __init__(self, fields: Sequence[FieldSpec], values: Mapping[str, Any], parent=None):
         super().__init__(parent)

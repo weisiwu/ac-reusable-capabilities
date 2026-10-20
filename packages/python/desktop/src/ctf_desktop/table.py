@@ -20,7 +20,7 @@ class Column:
     @ac-contract Immutable key/title and display callback (str default); rendering only, no SQL or sorting expressions.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     key: str
     title: str
@@ -37,7 +37,7 @@ class RecordTableModel(QAbstractTableModel):
     @ac-contract GUI-thread model over mapping records; require nonempty unique columns or ValueError; reset on set_records.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     def __init__(self, columns: Sequence[Column], parent=None):
         super().__init__(parent)
@@ -56,7 +56,7 @@ class RecordTableModel(QAbstractTableModel):
         @ac-contract Return zero for valid parent (flat model), otherwise current record count.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         return 0 if parent.isValid() else len(self.records)
 
@@ -70,23 +70,25 @@ class RecordTableModel(QAbstractTableModel):
         @ac-contract Return zero for valid parent, otherwise column count.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         return 0 if parent.isValid() else len(self.columns)
 
     def data(self, index: QModelIndex, role=Qt.DisplayRole):
-        """For valid model index return mapping for UserRole or formatted/empty text for DisplayRole; invalid index/other role returns None; formatter errors propagate.
+        """Return only for in-bounds indices owned by this model; UserRole returns mapping and DisplayRole formatted/empty text; invalid index/other role returns None; host display callback errors propagate.
 
         @ac-reusable
         @ac-capability desktop.table.RecordTableModel.data
         @ac-kind function
         @ac-tags desktop, table, RecordTableModel
-        @ac-contract For valid model index return mapping for UserRole or formatted/empty text for DisplayRole; invalid index/other role returns None; formatter errors propagate.
+        @ac-contract Return only for in-bounds indices owned by this model; UserRole returns mapping and DisplayRole formatted/empty text; invalid index/other role returns None; host display callback errors propagate.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         if not index.isValid():
+            return None
+        if index.model() is not self or not (0 <= index.row() < len(self.records) and 0 <= index.column() < len(self.columns)):
             return None
         record = self.records[index.row()]
         if role == Qt.UserRole:
@@ -98,35 +100,36 @@ class RecordTableModel(QAbstractTableModel):
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole):
-        """Horizontal DisplayRole returns column title; other orientation/role delegates to Qt.
+        """Horizontal DisplayRole returns in-bounds title, None for invalid section; other orientation/role delegates to Qt.
 
         @ac-reusable
         @ac-capability desktop.table.RecordTableModel.headerData
         @ac-kind function
         @ac-tags desktop, table, RecordTableModel
-        @ac-contract Horizontal DisplayRole returns column title; other orientation/role delegates to Qt.
+        @ac-contract Horizontal DisplayRole returns in-bounds title, None for invalid section; other orientation/role delegates to Qt.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
-            return self.columns[section].title
+            return self.columns[section].title if 0 <= section < len(self.columns) else None
         return super().headerData(section, orientation, role)
 
     def set_records(self, records: Sequence[Mapping[str, Any]]) -> None:
-        """Shallow-copy mappings into tuple inside model reset; clear selection through Qt reset; no database access.
+        """Convert mappings before reset; conversion failure leaves existing model and reset signals untouched; success shallow-copies into tuple and resets selection.
 
         @ac-reusable
         @ac-capability desktop.table.RecordTableModel.set_records
         @ac-kind function
         @ac-tags desktop, table, RecordTableModel
-        @ac-contract Shallow-copy mappings into tuple inside model reset; clear selection through Qt reset; no database access.
+        @ac-contract Convert mappings before reset; conversion failure leaves existing model and reset signals untouched; success shallow-copies into tuple and resets selection.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
+        copied = tuple(dict(record) for record in records)
         self.beginResetModel()
-        self.records = tuple(dict(record) for record in records)
+        self.records = copied
         self.endResetModel()
 
 
@@ -140,7 +143,7 @@ class PagedTable(QWidget):
     @ac-contract GUI-thread table with page_size=20, previous/next and extended row selection; page_requested(PageRequest) delegates fetch to host; empty initial page disables navigation.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     page_requested = pyqtSignal(object)
 
@@ -182,7 +185,7 @@ class PagedTable(QWidget):
         @ac-contract Display supplied PageResult and update page controls; no fetch, clamping or business validation; record mappings shallow copied.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         self._page = page
         self.request = page.request
@@ -206,7 +209,7 @@ class PagedTable(QWidget):
         @ac-contract Return selected mappings ordered by displayed row index; empty selection returns empty tuple; no cross-page selection retention.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/table.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         rows = sorted({index.row() for index in self.table.selectionModel().selectedRows()})
         return tuple(self.model.records[row] for row in rows)

@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.crud
 
-导入路径：`ctf_desktop.crud`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.crud`。场景接入见 [使用指南](../guides/crud.md)。
 
 ## CrudRepository
 

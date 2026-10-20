@@ -15,7 +15,7 @@ class PageRequest:
     @ac-contract Immutable number=1 and size=20; require positive integers (bool rejected), else ValueError; no IO.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     number: int = 1
     size: int = 20
@@ -35,7 +35,7 @@ class PageRequest:
         @ac-contract Return zero-based (number-1)*size without changing state.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         return (self.number - 1) * self.size
 
@@ -51,7 +51,7 @@ class PageResult:
     @ac-contract Immutable items tuple, nonnegative integer total and PageRequest; reject negative/noninteger totals; no IO.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     items: tuple[Any, ...]
     total: int
@@ -72,7 +72,7 @@ class PageResult:
         @ac-contract Return ceiling(total/size), at least one page even for an empty result.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         return max(1, (self.total + self.request.size - 1) // self.request.size)
 
@@ -87,7 +87,7 @@ class SqlWhere:
     @ac-contract Copy a caller-trusted column whitelist; accumulate SQLite ? predicates and bound values; never execute SQL.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
 
     def __init__(self, columns: Mapping[str, str]):
@@ -111,7 +111,7 @@ class SqlWhere:
         @ac-contract Skip None/empty text; otherwise whitelist field or raise ValueError, append equality and return self.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if value is not None and value != "":
             self._parts.append(f"{self._column(field)} = ?")
@@ -128,7 +128,7 @@ class SqlWhere:
         @ac-contract Skip empty text; whitelist field, escape literal percent/underscore/backslash, append LIKE and return self.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if value:
             escaped = str(value).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -146,7 +146,7 @@ class SqlWhere:
         @ac-contract Whitelist field even for empty bounds; append inclusive start and exclusive end when not None; return self.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         column = self._column(field)
         if start is not None:
@@ -167,6 +167,6 @@ class SqlWhere:
         @ac-contract Return detached (WHERE text, bound-value tuple); empty builder returns empty text and tuple; repeatable without mutation.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/query.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         return ("WHERE " + " AND ".join(self._parts) if self._parts else "", tuple(self._values))

@@ -20,7 +20,7 @@ class AppPaths:
     @ac-contract Immutable safe app_id path segment; reject dot/dotdot and invalid characters; no directory creation until ensure_user_data.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
     @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     app_id: str
 
@@ -38,7 +38,7 @@ class AppPaths:
         @ac-contract Return platform user-data path using APPDATA/XDG_DATA_HOME or home defaults; does not create directories.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
         @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if sys.platform == "darwin":
             base = Path.home() / "Library" / "Application Support"
@@ -58,7 +58,7 @@ class AppPaths:
         @ac-contract Create user-data directory and parents then return Path; IO errors propagate; never touches application database.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
         @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         directory = self.user_data()
         directory.mkdir(parents=True, exist_ok=True)
@@ -75,7 +75,7 @@ def load_json_config(path: str | Path, validate: Callable[[Mapping[str, Any]], N
     @ac-contract Read UTF-8 JSON object then invoke mandatory validator; return dict; JSON/IO/validation errors propagate; no writes.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
     @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     values = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(values, dict):
@@ -94,7 +94,7 @@ class SingleInstance:
     @ac-contract Qt local-server guard for caller app_id; reject empty id; caller owns release and requires Qt event environment.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
     @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
 
     def __init__(self, app_id: str):
@@ -113,7 +113,7 @@ class SingleInstance:
         @ac-contract Return true on acquired/already-owned socket; false for active peer; remove stale socket then retry; RuntimeError if listen still fails.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
         @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 
@@ -143,7 +143,7 @@ class SingleInstance:
         @ac-contract Close owned Qt server and clear ownership; idempotent; no killing peer processes.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. PyQt5 only for SingleInstance.
         @ac-example See examples/desktop_demo.py and docs/contracts/runtime.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if self._server is not None:
             self._server.close()

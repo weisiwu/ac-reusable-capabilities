@@ -12,7 +12,7 @@ QT_QPA_PLATFORM=offscreen python -m pytest -q packages/python/desktop/tests
 QT_QPA_PLATFORM=offscreen python packages/python/desktop/examples/desktop_demo.py --qt
 ```
 
-[能力目录](docs/能力目录.md) · [来源与迁入边界](docs/来源与迁入边界.md) · [验证记录](docs/验证记录.md)
+[完整文档](docs/README.md) · [快速开始](docs/快速开始.md) · [能力目录](docs/能力目录.md) · [来源与迁入边界](docs/来源与迁入边界.md) · [验证记录](docs/验证记录.md)
 
 以下保留模块接入说明。已收录的是基础接口与组件，不能据此认定后续项目增强能力已迁入。
 
@@ -88,3 +88,13 @@ QT_QPA_PLATFORM=offscreen python -m pytest -q
 - `src/ctf_desktop/`：可安装的框架代码。
 - `tests/`：核心与 Qt 离屏测试。
 - `docs/`：接入说明和模块对应关系。
+
+## 深入示例
+
+```bash
+python packages/python/desktop/examples/failure_scenarios.py
+python packages/python/desktop/examples/qt_showcase.py
+QT_QPA_PLATFORM=offscreen python packages/python/desktop/examples/qt_showcase.py --smoke
+```
+
+以上命令从仓库根目录运行；在本包目录运行时去掉 `packages/python/desktop/` 前缀。可执行示例使用临时数据或内存仓储，不连接真实账户、设备或生产数据库。

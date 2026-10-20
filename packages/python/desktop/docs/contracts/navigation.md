@@ -8,11 +8,12 @@ updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
+required_extra: qt
 ---
 
 # desktop.navigation
 
-导入路径：`ctf_desktop.navigation`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.navigation`。场景接入见 [使用指南](../guides/navigation.md)。
 
 ## PageSpec
 
@@ -24,7 +25,7 @@ Immutable route key/title and no-argument QWidget factory; host defines page on_
 
 稳定标识：`desktop.navigation.PageHost`
 
-GUI-thread registry caching one widget per route; page_changed(str) after successful navigation; caller invokes dispose before shutdown.
+GUI-thread page registry and lifecycle host; page_changed after success, navigation_failed(key,error) for sidebar failures; lifecycle reentry rejected; caller disposes before shutdown.
 
 ## PageHost.register
 
@@ -36,13 +37,13 @@ Add nonempty unique route and sidebar item; ValueError for invalid/duplicate key
 
 稳定标识：`desktop.navigation.PageHost.navigate`
 
-Return cached/new QWidget; KeyError for unknown route, TypeError for bad factory; call leave/enter and emit on success; failed enter attempts previous-page restoration; no-op on current route.
+Reject lifecycle reentry; return cached/new page and emit page_changed only after successful hooks; failed new page is disposed and removed; attempt previous-page restoration and preserve original error with cleanup notes.
 
 ## PageHost.dispose
 
 稳定标识：`desktop.navigation.PageHost.dispose`
 
-Invoke cached page cleanup hooks then detach/deleteLater widgets and clear current route; repeatable if cleanup succeeds; hook errors propagate.
+Reject lifecycle reentry; attempt every cleanup hook, always detach/deleteLater all pages and clear current state; aggregate first cleanup failure as RuntimeError after cleanup; repeatable afterward.
 
 ## 最小调用示例
 

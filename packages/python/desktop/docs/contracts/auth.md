@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.auth
 
-导入路径：`ctf_desktop.auth`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.auth`。场景接入见 [使用指南](../guides/auth.md)。
 
 ## CredentialStore
 
@@ -36,7 +36,7 @@ Immutable subject and roles (empty frozenset by default); identity metadata only
 
 稳定标识：`desktop.auth.PasswordHasher`
 
-PBKDF2-SHA256 hashes with random 16-byte salts and default 310000 iterations; minimum 100000; no persistence.
+PBKDF2-SHA256 with fresh 16-byte salts, default iterations=310000 and keyword max_verify_iterations=2000000; require integer work factors within policy; no persistence.
 
 ## PasswordHasher.hash
 
@@ -48,13 +48,13 @@ Require nonempty password; return algorithm$iterations$salt_hex$digest_hex with 
 
 稳定标识：`desktop.auth.PasswordHasher.verify`
 
-Compare encoded PBKDF2 hash in constant time; false for mismatches and malformed supported text; encoded records must be trusted and size bounded.
+Return false for invalid text, malformed salt/digest or iterations outside 100000..max_verify_iterations before hashing; valid hashes compared in constant time; no storage writes.
 
 ## PasswordHasher.needs_rehash
 
 稳定标识：`desktop.auth.PasswordHasher.needs_rehash`
 
-True for malformed format, wrong algorithm or iterations below configured policy; never rewrites stored hashes.
+True for malformed/unsupported hashes or work below configured iterations; validate salt/digest and bounded work before deciding; never modify storage.
 
 ## AuthService
 

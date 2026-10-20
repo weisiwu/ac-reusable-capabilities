@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.diagnostics
 
-导入路径：`ctf_desktop.diagnostics`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.diagnostics`。场景接入见 [使用指南](../guides/diagnostics.md)。
 
 ## redact
 
@@ -36,7 +36,7 @@ Return JSON time/level/logger/message/data; redact record.data only; stringify u
 
 稳定标识：`desktop.diagnostics.configure_json_logger`
 
-Create parent and UTF-8 file handler; reuse handler for same name/path, disable propagation, default INFO; caller closes/removes owned handlers; no rotation.
+Serialize logger setup; create UTF-8 handler or reuse same name/path and update redaction formatter; default INFO, max_bytes=5MiB and backup_count=3; 0 bytes disables rotation; invalid limits fail before IO; caller closes/removes handlers.
 
 ## AuditEvent
 

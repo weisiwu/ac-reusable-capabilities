@@ -8,11 +8,12 @@ updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
+required_extra: qt
 ---
 
 # desktop.feedback
 
-导入路径：`ctf_desktop.feedback`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.feedback`。场景接入见 [使用指南](../guides/feedback.md)。
 
 ## ConfirmDialog
 
@@ -36,13 +37,13 @@ GUI-thread static title/detail labels, empty detail default; parent owns lifetim
 
 稳定标识：`desktop.feedback.BusyOverlay`
 
-GUI-thread child overlay initially hidden; no background work or cancellation; caller hides/closes it.
+GUI-thread child overlay initially hidden; automatically follows parent resize; caller controls visibility and owns cancellation/work.
 
 ## BusyOverlay.show_message
 
 稳定标识：`desktop.feedback.BusyOverlay.show_message`
 
-Set wording, cover current parent rect and show/raise; caller must refresh geometry after later parent resize.
+Cover parent current rect, set wording and show/raise; parent resize events maintain geometry while widget exists.
 
 ## Toast
 
@@ -54,7 +55,7 @@ GUI-thread label initially hidden; parent owns it; fixed-style temporary feedbac
 
 稳定标识：`desktop.feedback.Toast.show_message`
 
-Show centered-top wording and schedule hide after duration_ms=3000; older timers are not reset, so overlapping calls may hide earlier.
+Validate nonnegative integer duration_ms=3000 before mutation; show message and restart one owned timer so earlier messages cannot hide newer ones.
 
 ## 最小调用示例
 
