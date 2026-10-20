@@ -30,9 +30,23 @@ async function copy(text) {
 }
 document.querySelectorAll('[data-link]').forEach(element => external(element, data[element.dataset.link]));
 $('revision').textContent = `文档版本 ${data.revision.length === 40 ? data.revision.slice(0, 7) : data.revision}`;
-const contexts = {table: 'desktop.table', form: 'desktop.forms', search: 'desktop.background', redact: 'desktop.diagnostics'};
-const titles = {table: '数据表格', form: '配置表单', search: '异步搜索', redact: '结构化脱敏'};
-let currentTab = 'table';
+const contexts = Object.fromEntries(data.browserDemos.map(scene => [scene.renderer, scene.capability_id]));
+const titles = Object.fromEntries(data.browserDemos.map(scene => [scene.renderer, scene.title]));
+const kindLabels = {component:'组件', library:'基础库', workflow:'流程能力', adapter:'适配器', tool:'工程工具'};
+const modeLabels = {browser:'浏览器演示', local:'本地示例', documentation:'文档接入'};
+let currentTab = null;
+document.querySelectorAll('[data-tab]').forEach(button => {
+  const available = Boolean(contexts[button.dataset.tab]);
+  button.hidden = !available;
+  if (!available) $(`pane-${button.dataset.tab}`).hidden = true;
+});
+if (!data.browserDemos.length) {
+  $('lab').hidden = true;
+  document.querySelector('.lab-heading').hidden = true;
+  document.querySelector('[data-nav="lab"]').hidden = true;
+}
+$('catalog-summary').textContent = `${data.packages.length} 个能力包 · ${data.capabilities.length} 项能力 · 来源可追溯，契约独立维护`;
+
 function selectTab(tab, focus = false) {
   if (tab !== currentTab && currentTab === 'search') cancelSearch();
   currentTab = tab;
@@ -51,7 +65,12 @@ function selectTab(tab, focus = false) {
     external($('context-source'), item.source);
     $('context-id').textContent = item.id;
   }
-  $('context-command').textContent = `python demo/run.py ${tab === 'search' ? 'desktop-search' : tab === 'redact' ? 'desktop-failures' : 'desktop-ui'}`;
+  const scene = data.browserDemos.find(scene => scene.renderer === tab);
+  const demo = data.demos.find(demo => demo.id === scene?.demo_id);
+  $('context-command').textContent = demo?.command || '请查看该能力的接入指南';
+  $('copy-context').hidden = !demo?.command;
+  $('lab-package').textContent = item ? `${item.language} / ${item.domain} · 浏览器行为示意` : '';
+
 }
 document.querySelectorAll('[data-tab]').forEach(button => {
   button.addEventListener('click', () => selectTab(button.dataset.tab));
@@ -167,41 +186,123 @@ $('redact-button').addEventListener('click', () => {
     $('redact-status').classList.add('error');
   }
 });
-function renderCapabilities() {
-  const matches = findCapabilities(data.capabilities, $('capability-query').value);
-  $('capability-count').textContent = `${matches.length} / ${data.capabilities.length} 项能力`;
-  $('capability-list').replaceChildren();
-  matches.forEach(item => {
-    const row = node('div', undefined, 'capability-row');
-    const name = node('div'); name.append(node('strong', item.name), node('small', item.id));
-    const links = node('div', undefined, 'row-actions');
-    const tab = Object.keys(contexts).find(key => contexts[key] === item.id);
-    if (tab) {
-      const tryIt = node('button', '体验'); tryIt.type = 'button';
-      tryIt.addEventListener('click', () => { selectTab(tab, true); $('lab').scrollIntoView({block: 'start'}); });
-      links.append(tryIt);
-    }
-    links.append(external(node('a', '指南 ↗'), item.guide), external(node('a', '契约 ↗'), item.contract));
-    row.append(name, node('span', `${item.package} / ${item.modules.join(', ')}`, 'modules'), links);
-    $('capability-list').append(row);
-  });
-  if (!matches.length) $('capability-list').append(node('p', '没有匹配的能力，试试模块名或稳定 ID。', 'empty'));
+function option(select, value, label) {
+  const element = node('option', label); element.value = value; select.append(element);
 }
-$('capability-query').addEventListener('input', renderCapabilities);
-data.demos.forEach(item => {
-  const row = node('article', undefined, 'demo-row');
-  const intro = node('div'); intro.append(node('h3', item.title), node('p', item.id));
-  const links = node('div', undefined, 'row-actions');
-  links.append(external(node('a', '示例源码 ↗'), item.source), external(node('a', '运行说明 ↗'), item.guide));
-  intro.append(links);
-  const commands = node('div');
-  const command = node('div', undefined, 'code-line'); command.append(node('code', item.command));
-  const button = node('button', '复制', 'copy'); button.type = 'button';
-  button.setAttribute('aria-label', `复制 ${item.id} 运行命令`);
-  button.addEventListener('click', () => copy(item.command));
-  command.append(button); commands.append(command, node('code', item.install, 'install'));
-  if (item.smoke) commands.append(node('code', `无显示器：QT_QPA_PLATFORM=offscreen ${item.command} --smoke`, 'install'));
-  row.append(intro, commands); $('demo-list').append(row);
+for (const [field, id] of [['language','filter-language'], ['domain','filter-domain'], ['kind','filter-kind']]) {
+  [...new Set(data.capabilities.map(item => item[field]))].sort().forEach(value => option($(id), value, kindLabels[value] || value));
+}
+data.origins.forEach(item => option($('filter-origin'), item.id, item.name));
+data.packages.forEach(item => option($('demo-package'), item.id, item.id));
+let catalogPage = 1;
+const pageSize = 8;
+function filters() {
+  return {language:$('filter-language').value,domain:$('filter-domain').value,kind:$('filter-kind').value,
+    origin:$('filter-origin').value,mode:$('filter-mode').value};
+}
+function showDemo(identity) {
+  const demo = data.demos.find(item => item.id === identity);
+  if (!demo) return;
+  $('demo-package').value = demo.package;
+  renderDemos();
+  const element = $(`demo-${identity}`);
+  element.classList.add('highlight');
+  element.scrollIntoView({block:'center'});
+}
+function showDetail(item) {
+  $('detail-title').textContent = item.name;
+  const content = $('detail-content'); content.replaceChildren();
+  const pkg = data.packages.find(pkg => pkg.id === item.package);
+  content.append(node('code',item.id,'detail-id'), node('p',item.summary));
+  const facts = node('dl',undefined,'detail-facts');
+  for (const [label,value] of [['语言',item.language],['领域',item.domain],['类型',kindLabels[item.kind] || item.kind],
+    ['能力包',item.package],['包版本',pkg?.version || '未声明'],['许可',pkg?.license || '见来源说明']]) {
+    facts.append(node('dt',label),node('dd',value));
+  }
+  content.append(facts);
+  const links = node('div',undefined,'detail-links');
+  links.append(external(node('a','使用指南 ↗'),item.guide),external(node('a','接口契约 ↗'),item.contract));
+  item.sources.forEach((url,index) => links.append(external(node('a',`源码 ${index+1} ↗`),url)));
+  content.append(links,node('h3','来源与演示'));
+  item.origin_ids.forEach(id => {
+    const origin = data.origins.find(origin => origin.id === id);
+    content.append(external(node('a',`${origin.name} · 来源记录 ↗`),origin.provenance));
+  });
+  if (!item.origin_ids.length) content.append(node('p','来源尚未登记，接入前核实许可与归属。'));
+  const demos = data.demos.filter(demo => item.demo_ids.includes(demo.id));
+  demos.forEach(demo => {
+    const box = node('div',undefined,'detail-demo'); box.append(node('h3',demo.title));
+    box.append(node('p',`${demo.mode === 'local' ? '本地运行' : '文档示例'}${demo.runtime ? ` · ${demo.runtime}` : ''}`));
+    if (demo.install) box.append(node('code',demo.install,'install'));
+    if (demo.command) box.append(node('pre',demo.command));
+    box.append(external(node('a','示例说明 ↗'),demo.guide)); content.append(box);
+  });
+  if (!demos.length) content.append(node('p','此能力通过指南与契约接入，没有登记可执行示例。'));
+  content.append(node('p','网站登记与浏览器演示不代表已完成你的目标环境验收。','boundary'));
+  $('capability-detail').showModal();
+}
+$('close-detail').addEventListener('click',() => $('capability-detail').close());
+function renderCapabilities() {
+  const matches = findCapabilities(data.capabilities, $('capability-query').value, filters());
+  const pages = Math.max(1, Math.ceil(matches.length / pageSize));
+  catalogPage = Math.min(catalogPage,pages);
+  $('capability-count').textContent = `${matches.length} / ${data.capabilities.length} 项能力`;
+  $('catalog-page-number').textContent = `${catalogPage} / ${pages}`;
+  $('catalog-previous').disabled = catalogPage === 1;
+  $('catalog-next').disabled = catalogPage === pages;
+  $('capability-list').replaceChildren();
+  matches.slice((catalogPage-1)*pageSize,catalogPage*pageSize).forEach(item => {
+    const row = node('article',undefined,'capability-row');
+    const name = node('div'); name.append(node('strong',item.name),node('small',item.id),node('p',item.summary,'capability-summary'));
+    const meta = node('div',undefined,'modules');
+    meta.append(node('span',`${item.language} / ${item.domain}`),node('span',kindLabels[item.kind] || item.kind,'kind-label'));
+    const links = node('div',undefined,'row-actions');
+    const detail = node('button','详情'); detail.type='button'; detail.setAttribute('aria-label',`查看${item.name}详情`);
+    detail.addEventListener('click',() => showDetail(item)); links.append(detail);
+    const scene = data.browserDemos.find(scene => scene.capability_id === item.id);
+    if (scene) {
+      const tryIt = node('button','浏览器演示'); tryIt.type='button';
+      tryIt.addEventListener('click',() => { selectTab(scene.renderer,true); $('lab').scrollIntoView({block:'start'}); }); links.append(tryIt);
+    } else {
+      const demo = data.demos.find(demo => item.demo_ids.includes(demo.id) && demo.mode === 'local');
+      if (demo) {const local = node('button','本地示例');local.type='button';local.addEventListener('click',() => showDemo(demo.id));links.append(local);}
+      else links.append(external(node('a','文档接入 ↗'),item.guide));
+    }
+    links.append(external(node('a','指南 ↗'),item.guide));
+    row.append(name,meta,links); $('capability-list').append(row);
+  });
+  if (!matches.length) $('capability-list').append(node('p','当前条件下没有能力。清除筛选，或尝试用途、标签和稳定 ID。','empty'));
+}
+function resetCatalogPage() {catalogPage=1;renderCapabilities();}
+$('capability-query').addEventListener('input',resetCatalogPage);
+['language','domain','kind','origin','mode'].forEach(key => $(`filter-${key}`).addEventListener('change',resetCatalogPage));
+$('clear-filters').addEventListener('click',() => {
+  $('capability-query').value=''; ['language','domain','kind','origin','mode'].forEach(key => {$(`filter-${key}`).value='';}); resetCatalogPage();
 });
+$('catalog-previous').addEventListener('click',() => {catalogPage-=1;renderCapabilities();});
+$('catalog-next').addEventListener('click',() => {catalogPage+=1;renderCapabilities();});
+function renderDemos() {
+  $('demo-list').replaceChildren();
+  const items = data.demos.filter(item => !$('demo-package').value || item.package === $('demo-package').value);
+  items.forEach(item => {
+    const row=node('article',undefined,'demo-row');row.id=`demo-${item.id}`;
+    const intro=node('div');intro.append(node('h3',item.title),node('p',`${item.package} · ${item.runtime || '文档'} · ${item.id}`));
+    const links=node('div',undefined,'row-actions');
+    if (item.source) links.append(external(node('a','示例源码 ↗'),item.source));
+    links.append(external(node('a','使用说明 ↗'),item.guide));intro.append(links);
+    const commands=node('div');
+    if (item.command) {
+      const command=node('div',undefined,'code-line');command.append(node('code',item.command));
+      const button=node('button','复制','copy');button.type='button';button.setAttribute('aria-label',`复制 ${item.id} 运行命令`);
+      button.addEventListener('click',() => copy(item.command));command.append(button);commands.append(command);
+    } else commands.append(node('p','按文档说明接入，无需本地启动命令。'));
+    if (item.install) commands.append(node('code',item.install,'install'));
+    if (item.smoke_command) commands.append(node('code',`自动验证：${item.smoke_command}`,'install'));
+    row.append(intro,commands);$('demo-list').append(row);
+  });
+  if (!items.length) $('demo-list').append(node('p','这个能力包暂未登记示例，请查阅包文档。','empty'));
+}
+$('demo-package').addEventListener('change',renderDemos);
 window.addEventListener('pagehide', () => {clearTimeout(debounce); clearTimeout(toastTimer); latest.cancel();});
-selectTab('table'); renderTable(); renderCapabilities();
+if (data.browserDemos.length) selectTab(data.browserDemos[0].renderer);
+renderTable(); renderCapabilities(); renderDemos();

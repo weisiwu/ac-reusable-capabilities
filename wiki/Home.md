@@ -27,3 +27,5 @@ article_status: published
 [文档中心](../docs/README.md) · [Demo 清单](../demo/README.md) · [Desktop 手册](../packages/python/desktop/docs/README.md) · [仓库首页](../README.md)
 
 当前 Wiki 是 `wiki/` 中可直接浏览的 Markdown，尚未发布到独立的 GitHub Wiki 页面。页面使用相对链接，与同一提交的源码、测试和 demo 保持关联。
+
+[多类型能力接入设计](../docs/多类型能力与站点接入.md) 说明语言、领域、来源与浏览器/本地/文档方式如何分别登记。

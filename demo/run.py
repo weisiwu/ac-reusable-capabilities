@@ -20,12 +20,12 @@ def _file(value):
 
 def _catalog():
     data = json.loads((ROOT / 'demo/catalog.json').read_text(encoding='utf-8'))
-    if not isinstance(data, dict) or type(data.get('schema_version')) is not int or data.get('schema_version') != 1 or not isinstance(data.get('demos'), list) or not data['demos']:
-        raise ValueError('expected demo catalog schema_version=1 with nonempty demos')
+    if not isinstance(data, dict) or type(data.get('schema_version')) is not int or data.get('schema_version') != 1 or not isinstance(data.get('demos'), list):
+        raise ValueError('expected demo catalog schema_version=1 with demos list')
     packages = {item['id'] for item in json.loads((ROOT / 'catalog.json').read_text(encoding='utf-8'))['packages']}
     demos = {}
     for item in data['demos']:
-        if not isinstance(item, dict) or not {'id', 'title', 'package_id', 'script', 'args', 'dependencies', 'smoke_args', 'guide'} <= item.keys():
+        if not isinstance(item, dict) or not {'id', 'title', 'package_id', 'guide'} <= item.keys():
             raise ValueError('demo entry is missing required fields')
         identity = item.get('id')
         if not isinstance(identity, str) or not identity or identity in demos:
@@ -34,8 +34,20 @@ def _catalog():
             raise ValueError(f'{identity}: unknown package_id')
         if not isinstance(item.get('title'), str) or not item['title']:
             raise ValueError(f'{identity}: title required')
-        if _file(item.get('script')).suffix != '.py':
-            raise ValueError(f'{identity}: only Python demo scripts supported')
+        mode = item.get('mode', 'local')
+        if mode not in ('local', 'documentation'):
+            raise ValueError(f'{identity}: unsupported demo mode')
+        if mode == 'documentation':
+            _file(item['guide'])
+            demos[identity] = item
+            continue
+        if not {'script', 'args', 'dependencies', 'smoke_args'} <= item.keys():
+            raise ValueError(f'{identity}: local demo is missing run fields')
+        script = _file(item.get('script'))
+        if item.get('runtime', 'python') == 'python' and script.suffix != '.py':
+            raise ValueError(f'{identity}: Python demo requires .py script')
+        if item.get('runtime', 'python') != 'python' and not item.get('command'):
+            raise ValueError(f'{identity}: non-Python demo requires explicit command')
         _file(item.get('guide'))
         for key in ('args', 'dependencies', 'smoke_args'):
             value = item.get(key)
@@ -66,12 +78,18 @@ def _main():
         return
     if args.list:
         for identity, item in demos.items():
-            mode = 'interactive; --smoke supported' if item['smoke_args'] is not None else 'automatic exit'
+            mode = ('documentation' if item.get('mode') == 'documentation' else
+                    'run declared command' if item.get('runtime', 'python') != 'python' else
+                    'interactive; --smoke supported' if item['smoke_args'] is not None else 'automatic exit')
             print(f"{identity}: {item['title']} [{mode}]")
         return
     if args.demo not in demos:
         parser.error('choose a valid demo ID from --list')
     item = demos[args.demo]
+    if item.get('mode') == 'documentation':
+        parser.exit(1, f"Documentation demo: {item['guide']}\n")
+    if item.get('runtime', 'python') != 'python':
+        parser.exit(1, f"This launcher executes Python only. Run the declared command in the repository root:\n  {item['command']}\n")
     if args.smoke and item['smoke_args'] is None:
         parser.error(f'{args.demo} exits automatically and does not accept --smoke')
     missing = [name for name in item['dependencies'] if importlib.util.find_spec(name) is None]

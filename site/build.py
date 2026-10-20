@@ -23,22 +23,66 @@ def _build(output, repository, revision):
         return base + quote(path, safe='/')
     catalog = json.loads((ROOT / 'catalog.json').read_text(encoding='utf-8'))
     demo_catalog = json.loads((ROOT / 'demo/catalog.json').read_text(encoding='utf-8'))
-    capabilities = []
     packages = {item['id']: item for item in catalog['packages']}
-    for package in packages.values():
-        for item in package['capabilities']:
-            capabilities.append(dict(id=item['id'], name=item['name'], package=package['id'],
-                                     modules=item['modules'], guide=link(item['guide']),
-                                     contract=link(item['contract']), source=link(f"{package['path']}/src/{package['import_package']}/{item['modules'][0]}.py")))
+    origins = {item['id']: dict(id=item['id'], name=item['name'], provenance=link(item['provenance']))
+               for item in catalog.get('origins', [])}
     demos = []
+    demo_ids = set()
     for item in demo_catalog['demos']:
-        package = packages[item['package_id']]
-        extra = '[qt]' if 'PyQt5' in item['dependencies'] else ''
+        if item['id'] in demo_ids or item['package_id'] not in packages:
+            raise ValueError('duplicate demo or unknown package')
+        demo_ids.add(item['id'])
+        if item.get('mode') not in ('local', 'documentation'):
+            raise ValueError('demo mode must be local or documentation')
+        if item['mode'] == 'local' and (not item.get('runtime') or not item.get('command')):
+            raise ValueError('local demo must declare runtime and command')
         demos.append(dict(id=item['id'], title=item['title'], package=item['package_id'],
-                          command=f"python demo/run.py {item['id']}",
-                          install=f"python -m pip install './{package['path']}{extra}'",
-                          smoke=bool(item['smoke_args']), source=link(item['script']), guide=link(item['guide'])))
-    data = dict(repository=f'https://github.com/{repository}', revision=revision, capabilities=capabilities, demos=demos,
+                          runtime=item.get('runtime', ''), mode=item['mode'],
+                          command=item.get('command', ''), install=item.get('install', ''),
+                          smoke_command=item.get('smoke_command'),
+                          source=link(item['script']) if item.get('script') else None,
+                          guide=link(item['guide'])))
+    capabilities = []
+    capability_ids = set()
+    package_data = []
+    for package in packages.values():
+        package_data.append(dict(id=package['id'], language=package['language'], domain=package['domain'],
+                                 version=package['version'], license=package.get('license', ''),
+                                 readme=link(package['readme'])))
+        for item in package['capabilities']:
+            if item['id'] in capability_ids:
+                raise ValueError('duplicate capability id')
+            capability_ids.add(item['id'])
+            if not item.get('sources') or not item.get('summary') or not item.get('kind'):
+                raise ValueError('capability requires sources, summary and kind')
+            registered_demos = item.get('demo_ids', [])
+            if any(identity not in demo_ids for identity in registered_demos):
+                raise ValueError('capability references unknown demo')
+            source_ids = item.get('origin_ids', package.get('origin_ids', []))
+            if any(identity not in origins for identity in source_ids):
+                raise ValueError('capability references unknown origin')
+            capabilities.append(dict(id=item['id'], name=item['name'], package=package['id'],
+                                     language=package['language'], domain=package['domain'],
+                                     kind=item['kind'], summary=item['summary'], tags=item.get('tags', []),
+                                     origin_ids=source_ids, demo_ids=registered_demos,
+                                     modules=item.get('modules', []), guide=link(item['guide']),
+                                     contract=link(item['contract']), sources=[link(path) for path in item['sources']],
+                                     source=link(item['sources'][0])))
+    scenes_path = ROOT / 'site/demos.json'
+    scenes = json.loads(scenes_path.read_text(encoding='utf-8'))['scenes'] if scenes_path.is_file() else []
+    renderers = set()
+    for scene in scenes:
+        if scene['renderer'] not in ('table', 'form', 'search', 'redact') or scene['renderer'] in renderers:
+            raise ValueError('unknown or duplicate browser renderer')
+        if scene['capability_id'] not in capability_ids or (scene.get('demo_id') and scene['demo_id'] not in demo_ids):
+            raise ValueError('browser scene references unknown capability or demo')
+        renderers.add(scene['renderer'])
+    for capability in capabilities:
+        local = any(demo['id'] in capability['demo_ids'] and demo['mode'] == 'local' for demo in demos)
+        browser = any(scene['capability_id'] == capability['id'] for scene in scenes)
+        capability['modes'] = ['documentation'] + (['local'] if local else []) + (['browser'] if browser else [])
+    data = dict(repository=f'https://github.com/{repository}', revision=revision, packages=package_data,
+                capabilities=capabilities, demos=demos, origins=list(origins.values()), browserDemos=scenes,
                 docs=link('docs/README.md'), wiki=link('wiki/Home.md'), demoGuide=link('demo/README.md'))
     output = Path(output).resolve()
     if output == ROOT or output in ROOT.parents or output.is_relative_to(ROOT / 'site'):

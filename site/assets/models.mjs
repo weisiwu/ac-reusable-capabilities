@@ -19,9 +19,15 @@ export function redact(value) {
   return value;
 }
 
-export function findCapabilities(capabilities, query) {
+export function findCapabilities(capabilities, query, filters = {}) {
   const keyword = query.trim().toLocaleLowerCase();
-  return capabilities.filter(item => `${item.name} ${item.id} ${item.package} ${item.modules.join(' ')}`.toLocaleLowerCase().includes(keyword));
+  return capabilities.filter(item => {
+    const text = `${item.name} ${item.id} ${item.package} ${(item.modules || []).join(' ')} ${item.summary || ''} ${(item.tags || []).join(' ')}`;
+    return text.toLocaleLowerCase().includes(keyword) &&
+      ['language', 'domain', 'kind'].every(key => !filters[key] || item[key] === filters[key]) &&
+      (!filters.origin || (item.origin_ids || []).includes(filters.origin)) &&
+      (!filters.mode || (item.modes || []).includes(filters.mode));
+  });
 }
 
 export class LatestRequest {

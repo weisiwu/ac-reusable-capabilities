@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scenes": [
+    {
+      "renderer": "table",
+      "capability_id": "desktop.table",
+      "demo_id": "desktop-ui",
+      "title": "数据表格"
+    },
+    {
+      "renderer": "form",
+      "capability_id": "desktop.forms",
+      "demo_id": "desktop-ui",
+      "title": "配置表单"
+    },
+    {
+      "renderer": "search",
+      "capability_id": "desktop.background",
+      "demo_id": "desktop-search",
+      "title": "异步搜索"
+    },
+    {
+      "renderer": "redact",
+      "capability_id": "desktop.diagnostics",
+      "demo_id": "desktop-failures",
+      "title": "结构化脱敏"
+    }
+  ]
+}

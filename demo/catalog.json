@@ -11,7 +11,12 @@
         "ctf_desktop"
       ],
       "smoke_args": null,
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-core",
+      "install": "python -m pip install './packages/python/desktop'",
+      "smoke_command": null
     },
     {
       "id": "desktop-ui",
@@ -26,7 +31,12 @@
       "smoke_args": [
         "--smoke"
       ],
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-ui",
+      "install": "python -m pip install './packages/python/desktop[qt]'",
+      "smoke_command": "QT_QPA_PLATFORM=offscreen python demo/run.py desktop-ui --smoke"
     },
     {
       "id": "desktop-search",
@@ -41,7 +51,12 @@
       "smoke_args": [
         "--smoke"
       ],
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-search",
+      "install": "python -m pip install './packages/python/desktop[qt]'",
+      "smoke_command": "QT_QPA_PLATFORM=offscreen python demo/run.py desktop-search --smoke"
     },
     {
       "id": "desktop-failures",
@@ -53,7 +68,12 @@
         "ctf_desktop"
       ],
       "smoke_args": null,
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-failures",
+      "install": "python -m pip install './packages/python/desktop'",
+      "smoke_command": null
     },
     {
       "id": "desktop-contracts",
@@ -65,7 +85,12 @@
         "ctf_desktop"
       ],
       "smoke_args": null,
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-contracts",
+      "install": "python -m pip install './packages/python/desktop'",
+      "smoke_command": null
     },
     {
       "id": "desktop-contracts-qt",
@@ -80,7 +105,12 @@
         "PyQt5"
       ],
       "smoke_args": null,
-      "guide": "packages/python/desktop/docs/README.md"
+      "guide": "packages/python/desktop/docs/README.md",
+      "runtime": "python",
+      "mode": "local",
+      "command": "python demo/run.py desktop-contracts-qt",
+      "install": "python -m pip install './packages/python/desktop[qt]'",
+      "smoke_command": null
     }
   ]
 }

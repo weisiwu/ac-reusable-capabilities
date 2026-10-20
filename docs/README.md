@@ -23,6 +23,7 @@ article_status: published
 | 组合异步、存储、服务和日志 | [接入场景](../wiki/Recipes.md) · [架构与文档职责](架构与文档职责.md) |
 | 查询输入输出、错误和依赖 | [Desktop 文档](../packages/python/desktop/docs/README.md) |
 | 处理安装和运行失败 | [排障](../wiki/Troubleshooting.md) |
+| 规划多语言与多类型接入 | [能力与站点设计](多类型能力与站点接入.md) |
 | 从其他项目迁入能力 | [收录流程](能力收录流程.md) · [目录规则](目录与收录规则.md) · [贡献规范](../CONTRIBUTING.md) |
 | 执行并核对验证 | [验证与维护](验证与维护.md) · [已有验证记录](../packages/python/desktop/docs/验证记录.md) |
 
