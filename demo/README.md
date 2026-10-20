@@ -12,6 +12,8 @@ article_status: published
 
 # Demo 运行入口
 
+[在线体验 GitHub Pages](https://weisiwu.github.io/ac-reusable-capabilities/) 提供表格、表单、异步搜索和脱敏的浏览器交互示意；[站点构建与发布](../site/README.md) 说明其边界和维护方式。Python / Qt 的真实运行命令见下文。
+
 所有命令在仓库根目录执行，Python >= 3.11。执行入口复用包内的示例源码，不另建演示版实现。`--list` 和 `--check` 只需标准库；运行示例前安装对应包。
 
 ## 安装与第一次运行

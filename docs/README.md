@@ -12,6 +12,8 @@ article_status: published
 
 # 文档中心
 
+[在线 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [站点构建与发布](../site/README.md)
+
 先运行 [Demo](../demo/README.md) 看行为，再从 [Wiki](../wiki/Home.md) 按场景选择能力。Wiki 负责导航和组合说明，精确接口、异常和生命周期以各包契约及源码测试为准。
 
 | 你的目标 | 阅读入口 |

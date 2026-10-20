@@ -12,6 +12,8 @@ article_status: published
 
 # 能力库 Wiki
 
+[在线 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) 可直接体验浏览器场景；Python / Qt 示例仍在本地运行。
+
 这套 Wiki 随仓库代码版本管理。先 [运行 demo](../demo/README.md)，再根据自己的项目选取能力；输入输出、失败行为与依赖以包内契约和测试为准。
 
 | 路径 | 解决的问题 |

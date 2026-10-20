@@ -16,7 +16,7 @@ article_status: published
 
 桌面基础能力包已收录到默认分支。包发布与接入项目验收分别进行，具体依据见包内验证记录。
 
-[运行 Demo](demo/README.md) · [Wiki](wiki/Home.md) · [文档中心](docs/README.md)
+[在线 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [本地 Demo](demo/README.md) · [Wiki](wiki/Home.md) · [文档中心](docs/README.md)
 
 ```bash
 # 在仓库根目录，使用 Python >= 3.11
