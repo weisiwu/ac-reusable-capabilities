@@ -4,7 +4,7 @@ category: "AI"
 tags: ["type/agent-policy", "area/software-development"]
 summary: "Agent 在公共复用仓库执行检索、注释、测试和 MR 交付的规则。"
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 ---
@@ -21,3 +21,9 @@ home_area: theme
 - 原创贡献按仓库许可交付，第三方内容保留来源、原许可和必要声明。
 - 本仓库的项目执行集成仅支持 Codex 与 DSH；复用代码的运行平台由各能力实际契约决定。
 - 知识沉淀归来源项目的个人项目专题，专题名依据确认项目名；源码与运行产物不写入知识库。
+
+## 多项目收录
+
+- 按 [目录与收录规则](docs/目录与收录规则.md) 使用 `packages/<language>/<domain>`，不按来源项目建立重复实现。
+- 新增前查 `catalog.json`、公开标记与现有契约；扩展优先，包独立版本化。
+- 同步索引并执行 `python scripts/check_catalog.py` 和受影响包验证。私有来源细节不进入公开文档或 PR。
