@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "demos": [
+    {
+      "id": "desktop-core",
+      "title": "无界面能力组合",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/desktop_demo.py",
+      "args": [],
+      "dependencies": [
+        "ctf_desktop"
+      ],
+      "smoke_args": null,
+      "guide": "packages/python/desktop/docs/README.md"
+    },
+    {
+      "id": "desktop-ui",
+      "title": "六页桌面交互展示",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/qt_showcase.py",
+      "args": [],
+      "dependencies": [
+        "ctf_desktop",
+        "PyQt5"
+      ],
+      "smoke_args": [
+        "--smoke"
+      ],
+      "guide": "packages/python/desktop/docs/README.md"
+    },
+    {
+      "id": "desktop-search",
+      "title": "异步联想搜索",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/background_search.py",
+      "args": [],
+      "dependencies": [
+        "ctf_desktop",
+        "PyQt5"
+      ],
+      "smoke_args": [
+        "--smoke"
+      ],
+      "guide": "packages/python/desktop/docs/README.md"
+    },
+    {
+      "id": "desktop-failures",
+      "title": "九个异常与恢复场景",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/failure_scenarios.py",
+      "args": [],
+      "dependencies": [
+        "ctf_desktop"
+      ],
+      "smoke_args": null,
+      "guide": "packages/python/desktop/docs/README.md"
+    },
+    {
+      "id": "desktop-contracts",
+      "title": "核心模块文档示例",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/check_contract_examples.py",
+      "args": [],
+      "dependencies": [
+        "ctf_desktop"
+      ],
+      "smoke_args": null,
+      "guide": "packages/python/desktop/docs/README.md"
+    },
+    {
+      "id": "desktop-contracts-qt",
+      "title": "全部模块文档示例",
+      "package_id": "python.desktop",
+      "script": "packages/python/desktop/examples/check_contract_examples.py",
+      "args": [
+        "--qt"
+      ],
+      "dependencies": [
+        "ctf_desktop",
+        "PyQt5"
+      ],
+      "smoke_args": null,
+      "guide": "packages/python/desktop/docs/README.md"
+    }
+  ]
+}

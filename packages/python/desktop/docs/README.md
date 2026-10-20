@@ -42,6 +42,8 @@ article_status: published
 
 ## 例子与验证
 
+以下命令从 `packages/python/desktop` 执行；仓库根目录也可使用 [统一 Demo 入口](../../../../demo/README.md)。场景选择见 [Wiki](../../../../wiki/Home.md)。
+
 | 示例 | 运行方式 | 覆盖 |
 | --- | --- | --- |
 | 组合入门 | `python examples/desktop_demo.py [--qt]` | CRUD、快照、服务、打印和可选 Qt |
