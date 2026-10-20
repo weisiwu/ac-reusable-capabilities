@@ -8,11 +8,12 @@ updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
+required_extra: qt
 ---
 
 # desktop.table
 
-导入路径：`ctf_desktop.table`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.table`。场景接入见 [使用指南](../guides/table.md)。
 
 ## Column
 
@@ -42,19 +43,19 @@ Return zero for valid parent, otherwise column count.
 
 稳定标识：`desktop.table.RecordTableModel.data`
 
-For valid model index return mapping for UserRole or formatted/empty text for DisplayRole; invalid index/other role returns None; formatter errors propagate.
+Return only for in-bounds indices owned by this model; UserRole returns mapping and DisplayRole formatted/empty text; invalid index/other role returns None; host display callback errors propagate.
 
 ## RecordTableModel.headerData
 
 稳定标识：`desktop.table.RecordTableModel.headerData`
 
-Horizontal DisplayRole returns column title; other orientation/role delegates to Qt.
+Horizontal DisplayRole returns in-bounds title, None for invalid section; other orientation/role delegates to Qt.
 
 ## RecordTableModel.set_records
 
 稳定标识：`desktop.table.RecordTableModel.set_records`
 
-Shallow-copy mappings into tuple inside model reset; clear selection through Qt reset; no database access.
+Convert mappings before reset; conversion failure leaves existing model and reset signals untouched; success shallow-copies into tuple and resets selection.
 
 ## PagedTable
 

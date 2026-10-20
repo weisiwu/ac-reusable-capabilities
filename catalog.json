@@ -8,12 +8,15 @@
       "path": "packages/python/desktop",
       "distribution": "common-tech-framework-desktop",
       "import_package": "ctf_desktop",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "review-required",
       "readme": "packages/python/desktop/README.md",
       "examples": [
         "packages/python/desktop/examples/desktop_demo.py",
-        "packages/python/desktop/examples/check_contract_examples.py"
+        "packages/python/desktop/examples/check_contract_examples.py",
+        "packages/python/desktop/examples/failure_scenarios.py",
+        "packages/python/desktop/examples/qt_showcase.py",
+        "packages/python/desktop/examples/background_search.py"
       ],
       "capabilities": [
         {
@@ -26,8 +29,10 @@
           "contract": "packages/python/desktop/docs/contracts/table.md",
           "tests": [
             "packages/python/desktop/tests/test_qt.py",
-            "packages/python/desktop/tests/test_qt_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/table.md"
         },
         {
           "id": "desktop.forms",
@@ -38,8 +43,10 @@
           "contract": "packages/python/desktop/docs/contracts/forms.md",
           "tests": [
             "packages/python/desktop/tests/test_qt.py",
-            "packages/python/desktop/tests/test_qt_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/forms.md"
         },
         {
           "id": "desktop.filters",
@@ -50,8 +57,10 @@
           "contract": "packages/python/desktop/docs/contracts/filters.md",
           "tests": [
             "packages/python/desktop/tests/test_qt.py",
-            "packages/python/desktop/tests/test_qt_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/filters.md"
         },
         {
           "id": "desktop.feedback",
@@ -62,8 +71,10 @@
           "contract": "packages/python/desktop/docs/contracts/feedback.md",
           "tests": [
             "packages/python/desktop/tests/test_qt.py",
-            "packages/python/desktop/tests/test_qt_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/feedback.md"
         },
         {
           "id": "desktop.navigation",
@@ -74,8 +85,10 @@
           "contract": "packages/python/desktop/docs/contracts/navigation.md",
           "tests": [
             "packages/python/desktop/tests/test_qt.py",
-            "packages/python/desktop/tests/test_qt_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/navigation.md"
         },
         {
           "id": "desktop.printing",
@@ -86,8 +99,11 @@
           "contract": "packages/python/desktop/docs/contracts/printing.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py",
+            "packages/python/desktop/tests/test_extensions_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/printing.md"
         },
         {
           "id": "desktop.auth",
@@ -98,8 +114,10 @@
           "contract": "packages/python/desktop/docs/contracts/auth.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/auth.md"
         },
         {
           "id": "desktop.crud",
@@ -113,8 +131,10 @@
             "packages/python/desktop/tests/test_qt.py",
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_qt.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/crud.md"
         },
         {
           "id": "desktop.transport",
@@ -125,8 +145,11 @@
           "contract": "packages/python/desktop/docs/contracts/transport.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py",
+            "packages/python/desktop/tests/test_extensions_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/transport.md"
         },
         {
           "id": "desktop.services",
@@ -137,8 +160,11 @@
           "contract": "packages/python/desktop/docs/contracts/services.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py",
+            "packages/python/desktop/tests/test_extensions_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/services.md"
         },
         {
           "id": "desktop.storage",
@@ -149,8 +175,11 @@
           "contract": "packages/python/desktop/docs/contracts/storage.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py",
+            "packages/python/desktop/tests/test_extensions_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/storage.md"
         },
         {
           "id": "desktop.query",
@@ -161,8 +190,10 @@
           "contract": "packages/python/desktop/docs/contracts/query.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/query.md"
         },
         {
           "id": "desktop.runtime",
@@ -173,8 +204,10 @@
           "contract": "packages/python/desktop/docs/contracts/runtime.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
-          ]
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/runtime.md"
         },
         {
           "id": "desktop.diagnostics",
@@ -185,10 +218,27 @@
           "contract": "packages/python/desktop/docs/contracts/diagnostics.md",
           "tests": [
             "packages/python/desktop/tests/test_core.py",
-            "packages/python/desktop/tests/test_contracts.py"
+            "packages/python/desktop/tests/test_contracts.py",
+            "packages/python/desktop/tests/test_review_core.py",
+            "packages/python/desktop/tests/test_extensions_core.py"
+          ],
+          "guide": "packages/python/desktop/docs/guides/diagnostics.md"
+        },
+        {
+          "id": "desktop.background",
+          "name": "有界后台任务与最新请求交付",
+          "modules": [
+            "background"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/background.md",
+          "guide": "packages/python/desktop/docs/guides/background.md",
+          "tests": [
+            "packages/python/desktop/tests/test_background.py",
+            "packages/python/desktop/tests/test_review_core.py"
           ]
         }
-      ]
+      ],
+      "documentation": "packages/python/desktop/docs/README.md"
     }
   ]
 }

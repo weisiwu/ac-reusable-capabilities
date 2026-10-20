@@ -18,7 +18,7 @@ article_status: published
 
 | 能力包 | 内容 | 入口 |
 | --- | --- | --- |
-| Desktop / Python | 表格、表单、查询、授权、CRUD、串口、打印调度、SQLite 保障、服务、诊断与运行基础 | [独立包](packages/python/desktop/README.md) · [能力目录](packages/python/desktop/docs/能力目录.md) |
+| Desktop / Python | 表格、表单、查询、授权、CRUD、串口、打印、SQLite、服务、诊断及有界异步任务 | [独立包](packages/python/desktop/README.md) · [使用手册](packages/python/desktop/docs/README.md) · [能力目录](packages/python/desktop/docs/能力目录.md) |
 
 提交前先检索已有能力，优先复用或改进。对于新增产物，说明复用场景、依赖与适用边界；提取后的代码重新验证，业务项目的测试通过不能替代提取版测试。
 

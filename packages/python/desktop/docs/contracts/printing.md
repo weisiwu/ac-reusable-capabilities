@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.printing
 
-导入路径：`ctf_desktop.printing`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.printing`。场景接入见 [使用指南](../guides/printing.md)。
 
 ## PrintItem
 
@@ -48,25 +48,25 @@ Read cooperative cancellation flag without mutation.
 
 稳定标识：`desktop.printing.BatchPrintRunner`
 
-Inject byte preparation and submission; own one executor; optional blocking GUI dispatcher and progress callback; call close at shutdown.
+Inject prepare and submit callbacks; own one executor and exclusive run state; with closes on exit; host supplies synchronous GUI dispatch and bounded IO.
 
 ## BatchPrintRunner.run
 
 稳定标识：`desktop.printing.BatchPrintRunner.run`
 
-Prepare once per plan item and submit each copy; stop at cancellation boundaries or first error; never retry uncertain submissions; progress errors are reported without reclassifying copies.
+Exclusively prepare once per item and submit copies in order; RuntimeError on overlapping run or closed runner; cancel at boundaries, no retries; progress errors do not reclassify submissions.
 
 ## BatchPrintRunner.start
 
 稳定标识：`desktop.printing.BatchPrintRunner.start`
 
-Snapshot plan then schedule run on owned worker; return Future; callbacks run there unless dispatch_submit synchronously marshals submission; no automatic retries.
+Snapshot plan then submit on owned single worker; return Future; reject closed runner; GUI dispatcher must synchronously finish submission; callbacks otherwise run on worker.
 
 ## BatchPrintRunner.close
 
 稳定标识：`desktop.printing.BatchPrintRunner.close`
 
-Wait for executor shutdown and cancel queued tasks; running host callbacks must terminate; no preemptive IO timeout.
+Mark closed, cancel queued futures and wait for executor plus any synchronous run; reject self-close from an active callback with RuntimeError; repeatable from owner thread; host IO must have finite completion.
 
 ## 最小调用示例
 

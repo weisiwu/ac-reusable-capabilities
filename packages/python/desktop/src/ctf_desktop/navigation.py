@@ -18,7 +18,7 @@ class PageSpec:
     @ac-contract Immutable route key/title and no-argument QWidget factory; host defines page on_enter/on_leave/dispose hooks.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     key: str
     title: str
@@ -26,18 +26,19 @@ class PageSpec:
 
 
 class PageHost(QWidget):
-    """GUI-thread registry caching one widget per route; page_changed(str) after successful navigation; caller invokes dispose before shutdown.
+    """GUI-thread page registry and lifecycle host; page_changed after success, navigation_failed(key,error) for sidebar failures; lifecycle reentry rejected; caller disposes before shutdown.
 
     @ac-reusable
     @ac-capability desktop.navigation.PageHost
     @ac-kind component
     @ac-tags desktop, navigation, PageHost
-    @ac-contract GUI-thread registry caching one widget per route; page_changed(str) after successful navigation; caller invokes dispose before shutdown.
+    @ac-contract GUI-thread page registry and lifecycle host; page_changed after success, navigation_failed(key,error) for sidebar failures; lifecycle reentry rejected; caller disposes before shutdown.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     page_changed = pyqtSignal(str)
+    navigation_failed = pyqtSignal(str, object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -46,6 +47,7 @@ class PageHost(QWidget):
         self._specs: dict[str, PageSpec] = {}
         self._pages: dict[str, QWidget] = {}
         self._current: str | None = None
+        self._transition = False
         layout = QHBoxLayout(self)
         layout.addWidget(self.sidebar)
         layout.addWidget(self.stack, 1)
@@ -61,7 +63,7 @@ class PageHost(QWidget):
         @ac-contract Add nonempty unique route and sidebar item; ValueError for invalid/duplicate key; does not construct page.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         if not spec.key or spec.key in self._specs:
             raise ValueError("page key is empty or already registered")
@@ -69,26 +71,60 @@ class PageHost(QWidget):
         self.sidebar.addItem(spec.title)
 
     def _on_row_changed(self, row: int) -> None:
-        if row >= 0:
-            self.navigate(tuple(self._specs)[row])
+        if 0 <= row < len(self._specs):
+            key = tuple(self._specs)[row]
+            try:
+                self.navigate(key)
+            except Exception as error:
+                self.navigation_failed.emit(key, error)
 
     def navigate(self, key: str) -> QWidget:
-        """Return cached/new QWidget; KeyError for unknown route, TypeError for bad factory; call leave/enter and emit on success; failed enter attempts previous-page restoration; no-op on current route.
+        """Reject lifecycle reentry; return cached/new page and emit page_changed only after successful hooks; failed new page is disposed and removed; attempt previous-page restoration and preserve original error with cleanup notes.
 
         @ac-reusable
         @ac-capability desktop.navigation.PageHost.navigate
         @ac-kind function
         @ac-tags desktop, navigation, PageHost
-        @ac-contract Return cached/new QWidget; KeyError for unknown route, TypeError for bad factory; call leave/enter and emit on success; failed enter attempts previous-page restoration; no-op on current route.
+        @ac-contract Reject lifecycle reentry; return cached/new page and emit page_changed only after successful hooks; failed new page is disposed and removed; attempt previous-page restoration and preserve original error with cleanup notes.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
+        if self._transition:
+            raise RuntimeError("page lifecycle reentry is not supported")
+        self._transition = True
+        try:
+            return self._navigate(key)
+        finally:
+            self._transition = False
+
+    def dispose(self) -> None:
+        """Reject lifecycle reentry; attempt every cleanup hook, always detach/deleteLater all pages and clear current state; aggregate first cleanup failure as RuntimeError after cleanup; repeatable afterward.
+
+        @ac-reusable
+        @ac-capability desktop.navigation.PageHost.dispose
+        @ac-kind function
+        @ac-tags desktop, navigation, PageHost
+        @ac-contract Reject lifecycle reentry; attempt every cleanup hook, always detach/deleteLater all pages and clear current state; aggregate first cleanup failure as RuntimeError after cleanup; repeatable afterward.
+        @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
+        @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
+        """
+        if self._transition:
+            raise RuntimeError("page lifecycle reentry is not supported")
+        self._transition = True
+        try:
+            return self._dispose()
+        finally:
+            self._transition = False
+
+    def _navigate(self, key):
         if key not in self._specs:
             raise KeyError(key)
         if key == self._current:
             return self._pages[key]
-        if key not in self._pages:
+        created = key not in self._pages
+        if created:
             page = self._specs[key].create()
             if not isinstance(page, QWidget):
                 raise TypeError("page factory must return a QWidget")
@@ -97,47 +133,60 @@ class PageHost(QWidget):
         page = self._pages[key]
         previous_key = self._current
         previous = self._pages.get(previous_key) if previous_key else None
-        if previous is not None and callable(getattr(previous, "on_leave", None)):
-            previous.on_leave()
-        self.stack.setCurrentWidget(page)
         try:
+            if previous is not None and callable(getattr(previous, "on_leave", None)):
+                previous.on_leave()
+            self.stack.setCurrentWidget(page)
             if callable(getattr(page, "on_enter", None)):
                 page.on_enter()
-        except Exception:
+        except Exception as error:
+            if created:
+                self._pages.pop(key, None)
+                try:
+                    cleanup = getattr(page, "dispose", None)
+                    if callable(cleanup):
+                        cleanup()
+                except Exception as cleanup_error:
+                    error.add_note(f"Failed-page cleanup also failed: {cleanup_error}")
+                finally:
+                    self.stack.removeWidget(page)
+                    page.deleteLater()
             if previous is not None:
                 self.stack.setCurrentWidget(previous)
-                if callable(getattr(previous, "on_enter", None)):
-                    previous.on_enter()
-            if previous_key is not None:
-                self.sidebar.blockSignals(True)
-                self.sidebar.setCurrentRow(tuple(self._specs).index(previous_key))
+                try:
+                    if callable(getattr(previous, "on_enter", None)):
+                        previous.on_enter()
+                except Exception as restore_error:
+                    error.add_note(f"Previous-page restoration also failed: {restore_error}")
+            self.sidebar.blockSignals(True)
+            try:
+                self.sidebar.setCurrentRow(tuple(self._specs).index(previous_key) if previous_key else -1)
+            finally:
                 self.sidebar.blockSignals(False)
             raise
         self._current = key
         row = tuple(self._specs).index(key)
         self.sidebar.blockSignals(True)
-        self.sidebar.setCurrentRow(row)
-        self.sidebar.blockSignals(False)
+        try:
+            self.sidebar.setCurrentRow(row)
+        finally:
+            self.sidebar.blockSignals(False)
         self.page_changed.emit(key)
         return page
 
-    def dispose(self) -> None:
-        """Invoke cached page cleanup hooks then detach/deleteLater widgets and clear current route; repeatable if cleanup succeeds; hook errors propagate.
-
-        @ac-reusable
-        @ac-capability desktop.navigation.PageHost.dispose
-        @ac-kind function
-        @ac-tags desktop, navigation, PageHost
-        @ac-contract Invoke cached page cleanup hooks then detach/deleteLater widgets and clear current route; repeatable if cleanup succeeds; hook errors propagate.
-        @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
-        @ac-example See examples/desktop_demo.py and docs/contracts/navigation.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
-        """
-        for page in self._pages.values():
-            cleanup = getattr(page, "dispose", None)
-            if callable(cleanup):
-                cleanup()
-            self.stack.removeWidget(page)
-            page.deleteLater()
+    def _dispose(self):
+        first_error = None
+        for page in tuple(self._pages.values()):
+            try:
+                cleanup = getattr(page, "dispose", None)
+                if callable(cleanup):
+                    cleanup()
+            except Exception as error:
+                first_error = first_error or error
+            finally:
+                self.stack.removeWidget(page)
+                page.deleteLater()
         self._pages.clear()
         self._current = None
+        if first_error is not None:
+            raise RuntimeError("one or more page cleanup hooks failed") from first_error

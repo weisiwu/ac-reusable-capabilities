@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from PyQt5.QtCore import QDate, QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QDate, QTimer, Qt, QSignalBlocker, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QDateEdit, QFormLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 
@@ -18,7 +18,7 @@ class FilterField:
     @ac-contract Immutable key/label, kind=text, optional choice pairs; supports text/choice/date_range, else ValueError.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     key: str
     label: str
@@ -31,16 +31,16 @@ class FilterField:
 
 
 class FilterPanel(QWidget):
-    """GUI-thread filter widgets; search_requested(dict) on search and reset_requested on clear; no persistence or SQL execution.
+    """GUI-thread filters with unique nonempty keys; search_requested(dict) on search and reset_requested on clear; no persistence or SQL execution.
 
     @ac-reusable
     @ac-capability desktop.filters.FilterPanel
     @ac-kind component
     @ac-tags desktop, filters, FilterPanel
-    @ac-contract GUI-thread filter widgets; search_requested(dict) on search and reset_requested on clear; no persistence or SQL execution.
+    @ac-contract GUI-thread filters with unique nonempty keys; search_requested(dict) on search and reset_requested on clear; no persistence or SQL execution.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     search_requested = pyqtSignal(dict)
     reset_requested = pyqtSignal()
@@ -48,6 +48,8 @@ class FilterPanel(QWidget):
     def __init__(self, fields: Sequence[FilterField], parent=None):
         super().__init__(parent)
         self.fields = tuple(fields)
+        if any(not field.key for field in self.fields) or len({field.key for field in self.fields}) != len(self.fields):
+            raise ValueError("field keys must be nonempty and unique")
         self._widgets: dict[str, object] = {}
         form = QFormLayout()
         for field in self.fields:
@@ -94,7 +96,7 @@ class FilterPanel(QWidget):
         @ac-contract Return nonempty filter values; strip text, choices return data, date ranges return ISO start/end or None; 1900-01-01 is the unset sentinel.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         result = {}
         for field in self.fields:
@@ -123,7 +125,7 @@ class FilterPanel(QWidget):
         @ac-contract Reset text/choice/date widgets and emit reset_requested; repeatable; never starts IO.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
         for field in self.fields:
             widget = self._widgets[field.key]
@@ -138,47 +140,65 @@ class FilterPanel(QWidget):
 
 
 class LiveSearchComboBox(QComboBox):
-    """GUI-thread editable combo; debounce user edits by delay_ms=200 and emit search_requested(str); caller performs query; text matching is not request-generation ordering.
+    """GUI-thread editable combo; debounce edits then emit request_started(id,text) and compatible search_requested(text); IDs advance on edits and requests; request_id in set_results rejects same-text stale responses.
 
     @ac-reusable
     @ac-capability desktop.filters.LiveSearchComboBox
     @ac-kind component
     @ac-tags desktop, filters, LiveSearchComboBox
-    @ac-contract GUI-thread editable combo; debounce user edits by delay_ms=200 and emit search_requested(str); caller performs query; text matching is not request-generation ordering.
+    @ac-contract GUI-thread editable combo; debounce edits then emit request_started(id,text) and compatible search_requested(text); IDs advance on edits and requests; request_id in set_results rejects same-text stale responses.
     @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
     @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-    @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+    @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
     """
     search_requested = pyqtSignal(str)
+    request_started = pyqtSignal(int, str)
 
     def __init__(self, delay_ms: int = 200, parent=None):
         super().__init__(parent)
         self.setEditable(True)
+        self._request_id = 0
         self._timer = QTimer(self)
         self._timer.setSingleShot(True)
         self._timer.setInterval(delay_ms)
-        self._timer.timeout.connect(lambda: self.search_requested.emit(self.currentText().strip()))
-        self.lineEdit().textEdited.connect(lambda _text: self._timer.start())
+        self._timer.timeout.connect(self._request_search)
+        self.lineEdit().textEdited.connect(self._edited)
 
-    def set_results(self, query: str, results: Sequence[tuple[Any, str]]) -> bool:
-        """Reject query unequal to current stripped text with false; otherwise replace (id,label) results, preserve text, show popup and return true; repeated same-text request races must be handled by caller.
+    def _edited(self, text):
+        self._request_id += 1
+        self._timer.start()
+
+    def _request_search(self):
+        self._request_id += 1
+        self.request_started.emit(self._request_id, self.currentText().strip())
+        self.search_requested.emit(self.currentText().strip())
+
+    def set_results(self, query: str, results: Sequence[tuple[Any, str]], *, request_id: int | None = None) -> bool:
+        """Reject stale query or optional request_id with false; validate all (value,text) pairs before mutation; preserve prior signal-block state on all exits, replace results and return true; old calls without request_id retain text-only comparison.
 
         @ac-reusable
         @ac-capability desktop.filters.LiveSearchComboBox.set_results
         @ac-kind function
         @ac-tags desktop, filters, LiveSearchComboBox
-        @ac-contract Reject query unequal to current stripped text with false; otherwise replace (id,label) results, preserve text, show popup and return true; repeated same-text request races must be handled by caller.
+        @ac-contract Reject stale query or optional request_id with false; validate all (value,text) pairs before mutation; preserve prior signal-block state on all exits, replace results and return true; old calls without request_id retain text-only comparison.
         @ac-dependencies Python >=3.11; PyQt5 >=5.15; all UI calls on Qt event thread.
         @ac-example See examples/desktop_demo.py and docs/contracts/filters.md.
-        @ac-tests tests/test_qt.py and tests/test_qt_contracts.py
+        @ac-tests tests/test_qt.py, tests/test_qt_contracts.py and tests/test_review_qt.py
         """
-        if query != self.currentText().strip():
+        if query != self.currentText().strip() or (request_id is not None and request_id != self._request_id):
             return False
-        self.blockSignals(True)
-        self.clear()
-        for value, label in results:
-            self.addItem(label, value)
-        self.setEditText(query)
-        self.blockSignals(False)
+        prepared = []
+        for row in results:
+            if not isinstance(row, (tuple, list)) or len(row) != 2 or not isinstance(row[1], str):
+                raise ValueError("search results must contain (value, text) pairs")
+            prepared.append(tuple(row))
+        blocker = QSignalBlocker(self)
+        try:
+            self.clear()
+            for value, label in prepared:
+                self.addItem(label, value)
+            self.setEditText(query)
+        finally:
+            del blocker
         self.showPopup()
         return True

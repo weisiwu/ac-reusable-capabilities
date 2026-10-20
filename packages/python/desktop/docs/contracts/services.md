@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.services
 
-导入路径：`ctf_desktop.services`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.services`。场景接入见 [使用指南](../guides/services.md)。
 
 ## ServiceSpec
 
@@ -30,19 +30,19 @@ RuntimeError raised with original cause after start failure and attempted revers
 
 稳定标识：`desktop.services.ServiceRegistry`
 
-Own registered instances; topologically start dependencies then reverse-stop; single-threaded registry, no global singleton.
+Own registered services, topological startup and reverse cleanup; with starts/stops; lifecycle callback reentry rejected; single-threaded registry.
 
 ## ServiceRegistry.register
 
 稳定标识：`desktop.services.ServiceRegistry.register`
 
-Register unique ServiceSpec before start; ValueError for duplicate or started registry.
+Register unique ServiceSpec before start; ValueError for duplicate/running registry; RuntimeError during start/stop callbacks; no lazy initialization.
 
 ## ServiceRegistry.start
 
 稳定标识：`desktop.services.ServiceRegistry.start`
 
-Validate missing/cyclic dependencies before side effects; invoke factories/start hooks; failure triggers cleanup then ServiceStartError; duplicate start raises RuntimeError.
+Topologically validate dependencies, start instances and rollback on error; lifecycle callback reentry rejected; ServiceStartError chains original failure and notes cleanup failure.
 
 ## ServiceRegistry.get
 
@@ -54,7 +54,7 @@ Return current instance by name or raise KeyError; never lazily create services.
 
 稳定标识：`desktop.services.ServiceRegistry.stop`
 
-Stop all started instances in reverse order, clear ownership; stop-hook exceptions produce RuntimeError after remaining hooks; repeated stop is harmless.
+Attempt every reverse-order cleanup including stop attribute lookup; always clear ownership, then raise RuntimeError from first failure; reentry rejected; idle stop harmless.
 
 ## ServiceRegistry.running
 

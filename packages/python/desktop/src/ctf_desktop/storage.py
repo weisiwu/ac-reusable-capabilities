@@ -12,32 +12,36 @@ from typing import Callable, Iterable
 
 @dataclass(frozen=True)
 class Migration:
-    """Immutable positive version and SQLite callback; callbacks must not commit/executescript or manage transactions; schema is host-owned.
+    """Immutable positive integer version (bool rejected) and callable SQLite migration; invalid spec raises ValueError; callbacks must not commit, executescript or manage transactions.
 
     @ac-reusable
     @ac-capability desktop.storage.Migration
     @ac-kind capability
     @ac-tags desktop, storage, Migration
-    @ac-contract Immutable positive version and SQLite callback; callbacks must not commit/executescript or manage transactions; schema is host-owned.
+    @ac-contract Immutable positive integer version (bool rejected) and callable SQLite migration; invalid spec raises ValueError; callbacks must not commit, executescript or manage transactions.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     version: int
     apply: Callable[[sqlite3.Connection], None]
 
+    def __post_init__(self):
+        if type(self.version) is not int or self.version < 1 or not callable(self.apply):
+            raise ValueError("migration requires a positive integer version and callable apply")
+
 
 class SqliteStore:
-    """Own one same-thread plaintext SQLite connection; create parent directory; no SQLCipher, key handling, process locks or downgrade support.
+    """Own one same-thread plaintext SQLite connection; creates parent directory; with connects and always closes without implicit commit; no SQLCipher or key management.
 
     @ac-reusable
     @ac-capability desktop.storage.SqliteStore
     @ac-kind capability
     @ac-tags desktop, storage, SqliteStore
-    @ac-contract Own one same-thread plaintext SQLite connection; create parent directory; no SQLCipher, key handling, process locks or downgrade support.
+    @ac-contract Own one same-thread plaintext SQLite connection; creates parent directory; with connects and always closes without implicit commit; no SQLCipher or key management.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     def __init__(self, path: str | Path):
         self.path = Path(path).expanduser().resolve()
@@ -54,7 +58,7 @@ class SqliteStore:
         @ac-contract Lazily open and reuse SQLite connection with foreign_keys enabled; host commits/rolls back writes; errors propagate.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if self._connection is None:
             self._connection = sqlite3.connect(self.path)
@@ -71,7 +75,7 @@ class SqliteStore:
         @ac-contract Close owned connection and reset reference; repeated close harmless; uncommitted writes are not committed.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if self._connection is not None:
             self._connection.close()
@@ -87,7 +91,7 @@ class SqliteStore:
         @ac-contract Sort unique positive versions; run newer callbacks in BEGIN IMMEDIATE and update user_version; commit all or rollback on error; reject newer stored schema and invalid versions.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ordered = sorted(tuple(migrations), key=lambda item: item.version)
         versions = [item.version for item in ordered]
@@ -118,16 +122,16 @@ class SqliteStore:
                 raise ValueError("SQLite integrity check failed")
 
     def backup(self, destination: str | Path) -> Path:
-        """Return new snapshot Path after backup API and integrity check; reject existing/live destination; RuntimeError on pending writes to avoid self-blocking; close temporary handles, remove staging file on failure.
+        """Return new consistent SQLite snapshot Path; reject existing/live target and pending writes; atomic no-overwrite publication via same-filesystem hard link, with no unsafe fallback; remove staging and close handles on every exit.
 
         @ac-reusable
         @ac-capability desktop.storage.SqliteStore.backup
         @ac-kind function
         @ac-tags desktop, storage, SqliteStore
-        @ac-contract Return new snapshot Path after backup API and integrity check; reject existing/live destination; RuntimeError on pending writes to avoid self-blocking; close temporary handles, remove staging file on failure.
+        @ac-contract Return new consistent SQLite snapshot Path; reject existing/live target and pending writes; atomic no-overwrite publication via same-filesystem hard link, with no unsafe fallback; remove staging and close handles on every exit.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         if self._connection is not None and self._connection.in_transaction:
             raise RuntimeError("commit or roll back pending writes before backup")
@@ -142,7 +146,8 @@ class SqliteStore:
             with closing(sqlite3.connect(temporary)) as snapshot:
                 self.connect().backup(snapshot)
             self._check(temporary)
-            os.replace(temporary, target)
+            # Publish without replacing a destination created after the first check.
+            os.link(temporary, target)
             return target
         finally:
             temporary.unlink(missing_ok=True)
@@ -157,7 +162,7 @@ class SqliteStore:
         @ac-contract Require different valid SQLite file; snapshot existing data for rollback, stage and check incoming copy, close owned connection then replace; return rollback Path or None; caller stops all other writers/connections; no crash-atomic multi-file recovery.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/storage.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         candidate = Path(source).expanduser().resolve()
         if candidate == self.path or not candidate.is_file():
@@ -182,3 +187,11 @@ class SqliteStore:
             return rollback
         finally:
             temporary.unlink(missing_ok=True)
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        self.close()
+        return False

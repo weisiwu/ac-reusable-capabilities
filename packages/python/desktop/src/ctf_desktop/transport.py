@@ -1,6 +1,7 @@
 """Byte transport contract and an optional pyserial implementation."""
 
 from dataclasses import dataclass
+import math
 from threading import RLock
 from typing import Callable, Protocol
 
@@ -15,7 +16,7 @@ class Transport(Protocol):
     @ac-contract Host-neutral open/close/read/write protocol; concrete implementations define timeout and concurrency semantics; no device commands.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
     @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     def open(self) -> None:
         """Open underlying transport or raise its documented error; return None.
@@ -27,7 +28,7 @@ class Transport(Protocol):
         @ac-contract Open underlying transport or raise its documented error; return None.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def close(self) -> None:
@@ -40,7 +41,7 @@ class Transport(Protocol):
         @ac-contract Release underlying transport resources; return None.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def write(self, payload: bytes) -> None:
@@ -53,7 +54,7 @@ class Transport(Protocol):
         @ac-contract Submit complete payload or raise; return None, not a delivery acknowledgement.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
     def read(self, size: int) -> bytes:
@@ -66,7 +67,7 @@ class Transport(Protocol):
         @ac-contract Return up to size bytes; concrete transport defines timeout/error behavior.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         ...
 
@@ -81,23 +82,23 @@ class TransportError(IOError):
     @ac-contract IOError for normalized open/read/write failures, chained to underlying cause where available.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
     @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     pass
 
 
 @dataclass(frozen=True)
 class SerialConfig:
-    """Immutable port, baudrate=9600, timeout=1.0 and write_timeout=1.0; reject empty port, nonpositive baudrate and negative timeouts.
+    """Immutable nonblank string port, positive integer baudrate=9600, finite nonnegative numeric timeout=1.0 and write_timeout=1.0; invalid values raise ValueError.
 
     @ac-reusable
     @ac-capability desktop.transport.SerialConfig
     @ac-kind capability
     @ac-tags desktop, transport, SerialConfig
-    @ac-contract Immutable port, baudrate=9600, timeout=1.0 and write_timeout=1.0; reject empty port, nonpositive baudrate and negative timeouts.
+    @ac-contract Immutable nonblank string port, positive integer baudrate=9600, finite nonnegative numeric timeout=1.0 and write_timeout=1.0; invalid values raise ValueError.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
     @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     port: str
     baudrate: int = 9600
@@ -105,21 +106,22 @@ class SerialConfig:
     write_timeout: float = 1.0
 
     def __post_init__(self) -> None:
-        if not self.port or self.baudrate <= 0 or self.timeout < 0 or self.write_timeout < 0:
+        valid_timeouts = all(type(value) in (int, float) and math.isfinite(value) and value >= 0 for value in (self.timeout, self.write_timeout))
+        if not isinstance(self.port, str) or not self.port.strip() or type(self.baudrate) is not int or self.baudrate <= 0 or not valid_timeouts:
             raise ValueError("invalid serial configuration")
 
 
 class SerialTransport:
-    """Own one serial handle and RLock; optional factory injection avoids hardware dependency; protocol and command retries belong to caller.
+    """Own one serial handle and RLock; optional factory injection; with opens and closes on every exit; device protocol and retries remain host-owned.
 
     @ac-reusable
     @ac-capability desktop.transport.SerialTransport
     @ac-kind capability
     @ac-tags desktop, transport, SerialTransport
-    @ac-contract Own one serial handle and RLock; optional factory injection avoids hardware dependency; protocol and command retries belong to caller.
+    @ac-contract Own one serial handle and RLock; optional factory injection; with opens and closes on every exit; device protocol and retries remain host-owned.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
     @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
 
     def __init__(self, config: SerialConfig, factory: Callable | None = None):
@@ -138,7 +140,7 @@ class SerialTransport:
         @ac-contract Idempotently construct serial handle using config; lazy-import pyserial if no factory; TransportError on dependency/open failure.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         with self._lock:
             if self._handle is not None:
@@ -161,21 +163,25 @@ class SerialTransport:
                 raise TransportError("serial open failed") from error
 
     def close(self) -> None:
-        """Detach and close owned handle under lock; repeated close harmless; underlying close errors propagate.
+        """Close handle under lock; release ownership only on success; normalize failure as TransportError and retain handle for cleanup retry; repeated successful close harmless.
 
         @ac-reusable
         @ac-capability desktop.transport.SerialTransport.close
         @ac-kind function
         @ac-tags desktop, transport, SerialTransport
-        @ac-contract Detach and close owned handle under lock; repeated close harmless; underlying close errors propagate.
+        @ac-contract Close handle under lock; release ownership only on success; normalize failure as TransportError and retain handle for cleanup retry; repeated successful close harmless.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         with self._lock:
-            handle, self._handle = self._handle, None
-            if handle is not None:
-                handle.close()
+            if self._handle is not None:
+                try:
+                    self._handle.close()
+                except Exception as error:
+                    # Retain ownership so callers can retry resource cleanup.
+                    raise TransportError("serial close failed") from error
+                self._handle = None
 
     def write(self, payload: bytes) -> None:
         """Convert payload to bytes, serialize IO, require complete write then flush; TransportError if closed/short write/backend fails; never retry.
@@ -187,7 +193,7 @@ class SerialTransport:
         @ac-contract Convert payload to bytes, serialize IO, require complete write then flush; TransportError if closed/short write/backend fails; never retry.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         data = bytes(payload)
         with self._lock:
@@ -204,19 +210,19 @@ class SerialTransport:
                 raise TransportError("serial write failed") from error
 
     def read(self, size: int) -> bytes:
-        """Require nonnegative size; serialize IO; return bytes; ValueError for negative size and TransportError for closed/backend failure.
+        """Require nonnegative integer size (bool rejected); serialize IO and return bytes; ValueError for invalid size and TransportError for closed/backend error.
 
         @ac-reusable
         @ac-capability desktop.transport.SerialTransport.read
         @ac-kind function
         @ac-tags desktop, transport, SerialTransport
-        @ac-contract Require nonnegative size; serialize IO; return bytes; ValueError for negative size and TransportError for closed/backend failure.
+        @ac-contract Require nonnegative integer size (bool rejected); serialize IO and return bytes; ValueError for invalid size and TransportError for closed/backend error.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
-        if size < 0:
-            raise ValueError("size must be nonnegative")
+        if type(size) is not int or size < 0:
+            raise ValueError("size must be a nonnegative integer")
         with self._lock:
             if self._handle is None:
                 raise TransportError("serial port is closed")
@@ -236,7 +242,15 @@ class SerialTransport:
         @ac-contract Return owned handle open status under lock; false when no handle is owned.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected. pyserial >=3.5 only for default hardware factory.
         @ac-example See examples/desktop_demo.py and docs/contracts/transport.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         with self._lock:
             return self._handle is not None and bool(self._handle.is_open)
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        self.close()
+        return False

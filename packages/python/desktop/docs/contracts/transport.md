@@ -12,7 +12,7 @@ article_status: published
 
 # desktop.transport
 
-导入路径：`ctf_desktop.transport`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.transport`。场景接入见 [使用指南](../guides/transport.md)。
 
 ## Transport
 
@@ -54,13 +54,13 @@ IOError for normalized open/read/write failures, chained to underlying cause whe
 
 稳定标识：`desktop.transport.SerialConfig`
 
-Immutable port, baudrate=9600, timeout=1.0 and write_timeout=1.0; reject empty port, nonpositive baudrate and negative timeouts.
+Immutable nonblank string port, positive integer baudrate=9600, finite nonnegative numeric timeout=1.0 and write_timeout=1.0; invalid values raise ValueError.
 
 ## SerialTransport
 
 稳定标识：`desktop.transport.SerialTransport`
 
-Own one serial handle and RLock; optional factory injection avoids hardware dependency; protocol and command retries belong to caller.
+Own one serial handle and RLock; optional factory injection; with opens and closes on every exit; device protocol and retries remain host-owned.
 
 ## SerialTransport.open
 
@@ -72,7 +72,7 @@ Idempotently construct serial handle using config; lazy-import pyserial if no fa
 
 稳定标识：`desktop.transport.SerialTransport.close`
 
-Detach and close owned handle under lock; repeated close harmless; underlying close errors propagate.
+Close handle under lock; release ownership only on success; normalize failure as TransportError and retain handle for cleanup retry; repeated successful close harmless.
 
 ## SerialTransport.write
 
@@ -84,7 +84,7 @@ Convert payload to bytes, serialize IO, require complete write then flush; Trans
 
 稳定标识：`desktop.transport.SerialTransport.read`
 
-Require nonnegative size; serialize IO; return bytes; ValueError for negative size and TransportError for closed/backend failure.
+Require nonnegative integer size (bool rejected); serialize IO and return bytes; ValueError for invalid size and TransportError for closed/backend error.
 
 ## SerialTransport.is_open
 

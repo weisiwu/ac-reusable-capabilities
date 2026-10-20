@@ -8,17 +8,18 @@ updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
+required_extra: qt
 ---
 
 # desktop.crud_page
 
-导入路径：`ctf_desktop.crud_page`。标识一经收录保持稳定。下列契约包含适用边界；外部回调与业务事务由接入方管理。
+导入路径：`ctf_desktop.crud_page`。场景接入见 [使用指南](../guides/crud_page.md)。
 
 ## CrudPage
 
 稳定标识：`desktop.crud_page.CrudPage`
 
-GUI-thread CRUD composition requiring injected authorized controller, identity_key, columns and fields; filters optional; synchronous host IO; changed(str,object) and operation_failed(str,object) signals.
+GUI-thread synchronous CRUD composition; missing identity emits operation_failed(action,ValueError); completed modal dialogs scheduled for deletion; changed and operation_failed signals delegate policy to host.
 
 ## CrudPage.load_page
 
@@ -30,25 +31,25 @@ Fetch requested/current page using current filters; display or emit operation_fa
 
 稳定标识：`desktop.crud_page.CrudPage.create_record`
 
-Show edit dialog; on accept call controller.create, emit changed and reload first page; controller errors become operation_failed; cancel makes no write.
+Open form, call authorized create only on acceptance, emit changed/reload first page; report controller errors and delete dialog on every exit.
 
 ## CrudPage.edit_selected
 
 稳定标识：`desktop.crud_page.CrudPage.edit_selected`
 
-Require exactly one selected record; show prefilled dialog; accepted edits update identity, emit changed and reload; controller errors become operation_failed.
+Require one selected record with identity; report missing identity as operation_failed(update,error); accepted form updates then reloads; always delete dialog.
 
 ## CrudPage.show_detail
 
 稳定标识：`desktop.crud_page.CrudPage.show_detail`
 
-Require one selection; authorized detail lookup; show read-only dialog or inform missing record and reload; controller errors become operation_failed(read,error).
+Require selected identity; authorized lookup errors become operation_failed(read,error); show detail or reload missing row; always delete detail dialog.
 
 ## CrudPage.delete_selected
 
 稳定标识：`desktop.crud_page.CrudPage.delete_selected`
 
-Require one selection and affirmative confirmation; authorized delete then changed/reload; cancel makes no write; controller errors become operation_failed.
+Require selected identity and affirmative confirmation; report malformed identity or controller failure; successful delete emits changed and reloads; cancellation writes nothing.
 
 ## 最小调用示例
 

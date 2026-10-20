@@ -2,7 +2,7 @@
 
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
-from threading import Event
+from threading import Event, Lock, get_ident
 from typing import Callable, Iterable
 
 
@@ -17,7 +17,7 @@ class PrintItem:
     @ac-contract Immutable nonempty key and copies=1 positive integer (bool rejected); ValueError for invalid plan item.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     key: str
     copies: int = 1
@@ -38,7 +38,7 @@ class BatchPrintResult:
     @ac-contract Immutable total/succeeded/failed/skipped counters and optional error; counts describe submission, not physical paper output.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     total: int
     succeeded: int
@@ -57,7 +57,7 @@ class CancellationToken:
     @ac-contract Thread-safe cooperative flag initially false; no interrupts of in-flight host IO.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
     def __init__(self) -> None:
         self._event = Event()
@@ -72,7 +72,7 @@ class CancellationToken:
         @ac-contract Set cancellation flag permanently; repeated calls are harmless and return None.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         self._event.set()
 
@@ -87,22 +87,22 @@ class CancellationToken:
         @ac-contract Read cooperative cancellation flag without mutation.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
         return self._event.is_set()
 
 
 class BatchPrintRunner:
-    """Inject byte preparation and submission; own one executor; optional blocking GUI dispatcher and progress callback; call close at shutdown.
+    """Inject prepare and submit callbacks; own one executor and exclusive run state; with closes on exit; host supplies synchronous GUI dispatch and bounded IO.
 
     @ac-reusable
     @ac-capability desktop.printing.BatchPrintRunner
     @ac-kind capability
     @ac-tags desktop, printing, BatchPrintRunner
-    @ac-contract Inject byte preparation and submission; own one executor; optional blocking GUI dispatcher and progress callback; call close at shutdown.
+    @ac-contract Inject prepare and submit callbacks; own one executor and exclusive run state; with closes on exit; host supplies synchronous GUI dispatch and bounded IO.
     @ac-dependencies Python >=3.11 standard library; host dependencies injected.
     @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-    @ac-tests tests/test_core.py and tests/test_contracts.py
+    @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
     """
 
     def __init__(
@@ -118,19 +118,75 @@ class BatchPrintRunner:
         self.dispatch_submit = dispatch_submit or (lambda operation: operation())
         self.on_progress = on_progress or (lambda _key, _copy, _total: None)
         self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ctf-print")
+        self._run_lock = Lock()
+        self._state_lock = Lock()
+        self._closed = False
+        self._running_thread = None
 
     def run(self, items: Iterable[PrintItem], token: CancellationToken | None = None) -> BatchPrintResult:
-        """Prepare once per plan item and submit each copy; stop at cancellation boundaries or first error; never retry uncertain submissions; progress errors are reported without reclassifying copies.
+        """Exclusively prepare once per item and submit copies in order; RuntimeError on overlapping run or closed runner; cancel at boundaries, no retries; progress errors do not reclassify submissions.
 
         @ac-reusable
         @ac-capability desktop.printing.BatchPrintRunner.run
         @ac-kind function
         @ac-tags desktop, printing, BatchPrintRunner
-        @ac-contract Prepare once per plan item and submit each copy; stop at cancellation boundaries or first error; never retry uncertain submissions; progress errors are reported without reclassifying copies.
+        @ac-contract Exclusively prepare once per item and submit copies in order; RuntimeError on overlapping run or closed runner; cancel at boundaries, no retries; progress errors do not reclassify submissions.
         @ac-dependencies Python >=3.11 standard library; host dependencies injected.
         @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
         """
+        if not self._run_lock.acquire(blocking=False):
+            raise RuntimeError("batch runner already running")
+        try:
+            with self._state_lock:
+                if self._closed:
+                    raise RuntimeError("batch runner is closed")
+                self._running_thread = get_ident()
+            return self._run_plan(items, token)
+        finally:
+            with self._state_lock:
+                self._running_thread = None
+            self._run_lock.release()
+
+    def start(self, items: Iterable[PrintItem], token: CancellationToken | None = None) -> Future:
+        """Snapshot plan then submit on owned single worker; return Future; reject closed runner; GUI dispatcher must synchronously finish submission; callbacks otherwise run on worker.
+
+        @ac-reusable
+        @ac-capability desktop.printing.BatchPrintRunner.start
+        @ac-kind function
+        @ac-tags desktop, printing, BatchPrintRunner
+        @ac-contract Snapshot plan then submit on owned single worker; return Future; reject closed runner; GUI dispatcher must synchronously finish submission; callbacks otherwise run on worker.
+        @ac-dependencies Python >=3.11 standard library; host dependencies injected.
+        @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
+        """
+        planned = tuple(items)
+        with self._state_lock:
+            if self._closed:
+                raise RuntimeError("batch runner is closed")
+            return self._executor.submit(self.run, planned, token)
+
+    def close(self) -> None:
+        """Mark closed, cancel queued futures and wait for executor plus any synchronous run; reject self-close from an active callback with RuntimeError; repeatable from owner thread; host IO must have finite completion.
+
+        @ac-reusable
+        @ac-capability desktop.printing.BatchPrintRunner.close
+        @ac-kind function
+        @ac-tags desktop, printing, BatchPrintRunner
+        @ac-contract Mark closed, cancel queued futures and wait for executor plus any synchronous run; reject self-close from an active callback with RuntimeError; repeatable from owner thread; host IO must have finite completion.
+        @ac-dependencies Python >=3.11 standard library; host dependencies injected.
+        @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
+        @ac-tests tests/test_core.py, tests/test_contracts.py and tests/test_review_core.py
+        """
+        with self._state_lock:
+            if self._running_thread == get_ident():
+                raise RuntimeError("cannot close batch runner from its running callback")
+            self._closed = True
+        self._executor.shutdown(wait=True, cancel_futures=True)
+        with self._run_lock:
+            pass
+
+    def _run_plan(self, items, token):
         planned = tuple(items)
         total = sum(item.copies for item in planned)
         succeeded = failed = 0
@@ -157,31 +213,11 @@ class BatchPrintRunner:
             failed = 1
             return BatchPrintResult(total, succeeded, failed, max(0, total - succeeded - failed), str(error))
 
-    def start(self, items: Iterable[PrintItem], token: CancellationToken | None = None) -> Future:
-        """Snapshot plan then schedule run on owned worker; return Future; callbacks run there unless dispatch_submit synchronously marshals submission; no automatic retries.
+    def __enter__(self):
+        if self._closed:
+            raise RuntimeError("batch runner is closed")
+        return self
 
-        @ac-reusable
-        @ac-capability desktop.printing.BatchPrintRunner.start
-        @ac-kind function
-        @ac-tags desktop, printing, BatchPrintRunner
-        @ac-contract Snapshot plan then schedule run on owned worker; return Future; callbacks run there unless dispatch_submit synchronously marshals submission; no automatic retries.
-        @ac-dependencies Python >=3.11 standard library; host dependencies injected.
-        @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
-        """
-        planned = tuple(items)
-        return self._executor.submit(self.run, planned, token)
-
-    def close(self) -> None:
-        """Wait for executor shutdown and cancel queued tasks; running host callbacks must terminate; no preemptive IO timeout.
-
-        @ac-reusable
-        @ac-capability desktop.printing.BatchPrintRunner.close
-        @ac-kind function
-        @ac-tags desktop, printing, BatchPrintRunner
-        @ac-contract Wait for executor shutdown and cancel queued tasks; running host callbacks must terminate; no preemptive IO timeout.
-        @ac-dependencies Python >=3.11 standard library; host dependencies injected.
-        @ac-example See examples/desktop_demo.py and docs/contracts/printing.md.
-        @ac-tests tests/test_core.py and tests/test_contracts.py
-        """
-        self._executor.shutdown(wait=True, cancel_futures=True)
+    def __exit__(self, exc_type, exc, traceback):
+        self.close()
+        return False
