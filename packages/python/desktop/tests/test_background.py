@@ -122,3 +122,49 @@ def test_parent_destruction_during_work_cancels_without_late_gui_delivery(qapp):
     parent.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.DeferredDelete)
     thread.join(timeout=2);qapp.processEvents()
     assert not thread.is_alive() and not results
+
+
+def test_replacement_cancel_callback_can_close_runner(qapp):
+    runner=BackgroundTaskRunner();executed=[]
+    runner.submit(lambda cancel:cancel.wait(1))
+    runner.cancelled.connect(lambda identity:runner.close())
+    try:
+        identity=runner.submit(lambda cancel:executed.append('replacement'))
+        assert identity==2
+        assert runner._closed and not runner._worker.thread.is_alive()
+    finally:runner.close()
+
+
+def test_replacement_cancel_callback_can_submit_newer_generation(qapp):
+    runner=BackgroundTaskRunner();results=[];nested=[]
+    runner.succeeded.connect(lambda *args:results.append(args))
+    first=runner.submit(lambda cancel:cancel.wait(1))
+    def replace(identity):
+        if identity==first:nested.append(runner.submit(lambda cancel:'nested'))
+    runner.cancelled.connect(replace)
+    try:
+        outer=runner.submit(lambda cancel:'outer',timeout_ms=500)
+        until(lambda:bool(results))
+        assert outer==2 and nested==[3]
+        assert results==[(3,'nested')]
+    finally:runner.close()
+
+
+def test_close_callback_observes_closed_state_and_can_close_again(qapp):
+    runner=BackgroundTaskRunner();states=[]
+    runner.submit(lambda cancel:cancel.wait(1))
+    def closing(identity):
+        states.append(runner._closed)
+        runner.close()
+    runner.cancelled.connect(closing)
+    runner.close()
+    assert states==[True] and not runner._worker.thread.is_alive()
+
+
+def test_search_signals_share_query_snapshot_when_callback_changes_text(qapp):
+    combo=LiveSearchComboBox();queries=[]
+    combo.setEditText('original')
+    combo.request_started.connect(lambda identity,query:combo.setEditText('changed'))
+    combo.search_requested.connect(queries.append)
+    combo._request_search()
+    assert queries==['original']

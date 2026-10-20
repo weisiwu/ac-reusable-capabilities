@@ -120,7 +120,9 @@ class BackgroundTaskRunner(QObject):
         @ac-contract Require callable operation and optional positive integer
             timeout_ms within Qt int range; invalid input raises before mutation.
             Closed runner raises RuntimeError. Operation must observe Event and
-            use bounded external IO; it must never access Qt widgets.
+            use bounded external IO; it must never access Qt widgets. Commit
+            replacement before cancelled notification; reentrant submissions win.
+            Return this call's generation even if a slot submits again or closes.
         @ac-dependencies PyQt5; operation supplies and closes its own IO handles.
         @ac-example See examples/background_search.py.
         @ac-tests tests/test_background.py
@@ -129,13 +131,20 @@ class BackgroundTaskRunner(QObject):
             raise RuntimeError('background runner is closed')
         if not callable(operation) or (timeout_ms is not None and (type(timeout_ms) is not int or not 0 < timeout_ms <= 2_147_483_647)):
             raise ValueError('operation must be callable and timeout_ms a positive Qt integer')
-        self.cancel()
+        previous = self._generation if self._active else None
+        self._timer.stop()
+        self._worker.cancel()
         self._generation += 1
+        identity = self._generation
         self._active = True
-        self._worker.submit(self._generation, operation, Event())
+        self._worker.submit(identity, operation, Event())
         if timeout_ms is not None:
             self._timer.start(timeout_ms)
-        return self._generation
+        # Direct Qt slots may submit newer work or close us. Finish the state
+        # transition first, and never overwrite their changes after notification.
+        if previous is not None:
+            self.cancelled.emit(previous)
+        return identity
 
     def cancel(self) -> None:
         """Cooperatively cancel active/pending work and suppress its late result.
@@ -174,8 +183,8 @@ class BackgroundTaskRunner(QObject):
         @ac-tests tests/test_background.py
         """
         if not self._closed:
-            self.cancel()
             self._closed = True
+            self.cancel()
         self._worker.close(wait)
 
     def _timeout(self):

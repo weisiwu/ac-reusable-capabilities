@@ -24,6 +24,12 @@ article_status: published
 
 每个回调自己创建/关闭该线程使用的数据库连接或 HTTP/串口句柄，不把 SqliteStore 的 GUI 线程连接传过去。外部 IO 设置超时，循环使用 event.wait 或检查 is_set；取消不是抢占式中断。
 
+## 信号回调中的重入
+
+替换任务时，先完成新任务的编号、等待槽和超时设置，再发出旧任务的 cancelled 通知。通知回调可以再次 submit 或 close；回调里提交的任务代次更新，外层 submit 仍返回自身的编号，不覆盖回调的状态。被取消的操作可能已经开始执行，因此仍须观察取消 Event，不能依赖取消撤销副作用。
+
+close 在发出取消通知前已标记关闭；通知回调可以重复 close，随后 submit 会被拒绝。同一次联想搜索的 request_started 和 search_requested 使用相同文字快照，即使第一个信号的回调改了输入框。
+
 ## 生命周期
 
 显式 close() 默认等待后台资源释放；只能在操作有有限结束条件时使用。close(wait=False) 先取消返回，之后 close(wait=True) 可以等待。QObject 父对象销毁会非阻塞取消；它不能保证不合作的第三方调用马上退出。不得在后台 operation 内关闭并等待自己的 worker。

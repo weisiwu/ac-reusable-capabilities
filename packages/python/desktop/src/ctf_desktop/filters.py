@@ -170,8 +170,9 @@ class LiveSearchComboBox(QComboBox):
 
     def _request_search(self):
         self._request_id += 1
-        self.request_started.emit(self._request_id, self.currentText().strip())
-        self.search_requested.emit(self.currentText().strip())
+        query = self.currentText().strip()
+        self.request_started.emit(self._request_id, query)
+        self.search_requested.emit(query)
 
     def set_results(self, query: str, results: Sequence[tuple[Any, str]], *, request_id: int | None = None) -> bool:
         """Reject stale query or optional request_id with false; validate all (value,text) pairs before mutation; preserve prior signal-block state on all exits, replace results and return true; old calls without request_id retain text-only comparison.
