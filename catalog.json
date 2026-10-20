@@ -32,7 +32,20 @@
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/table.md"
+          "guide": "packages/python/desktop/docs/guides/table.md",
+          "kind": "component",
+          "summary": "按列映射展示记录，以应用注入的查询完成分页。",
+          "demo_ids": [
+            "desktop-ui"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/table.py",
+            "packages/python/desktop/src/ctf_desktop/query.py"
+          ],
+          "tags": [
+            "table",
+            "query"
+          ]
         },
         {
           "id": "desktop.forms",
@@ -46,7 +59,18 @@
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/forms.md"
+          "guide": "packages/python/desktop/docs/guides/forms.md",
+          "kind": "component",
+          "summary": "通过字段配置采集、校验和展示数据。",
+          "demo_ids": [
+            "desktop-ui"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/forms.py"
+          ],
+          "tags": [
+            "forms"
+          ]
         },
         {
           "id": "desktop.filters",
@@ -60,7 +84,19 @@
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/filters.md"
+          "guide": "packages/python/desktop/docs/guides/filters.md",
+          "kind": "component",
+          "summary": "采集筛选条件、延迟触发联想查询并拒绝旧结果。",
+          "demo_ids": [
+            "desktop-ui",
+            "desktop-search"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/filters.py"
+          ],
+          "tags": [
+            "filters"
+          ]
         },
         {
           "id": "desktop.feedback",
@@ -74,7 +110,18 @@
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/feedback.md"
+          "guide": "packages/python/desktop/docs/guides/feedback.md",
+          "kind": "component",
+          "summary": "确认、空状态、忙碌遮罩和短时提示。",
+          "demo_ids": [
+            "desktop-ui"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/feedback.py"
+          ],
+          "tags": [
+            "feedback"
+          ]
         },
         {
           "id": "desktop.navigation",
@@ -88,7 +135,18 @@
             "packages/python/desktop/tests/test_qt_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/navigation.md"
+          "guide": "packages/python/desktop/docs/guides/navigation.md",
+          "kind": "component",
+          "summary": "页面注册、懒加载、切换与销毁。",
+          "demo_ids": [
+            "desktop-ui"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/navigation.py"
+          ],
+          "tags": [
+            "navigation"
+          ]
         },
         {
           "id": "desktop.printing",
@@ -103,7 +161,19 @@
             "packages/python/desktop/tests/test_review_core.py",
             "packages/python/desktop/tests/test_extensions_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/printing.md"
+          "guide": "packages/python/desktop/docs/guides/printing.md",
+          "kind": "workflow",
+          "summary": "准备与逐份提交打印任务，支持取消和失败即停。",
+          "demo_ids": [
+            "desktop-core",
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/printing.py"
+          ],
+          "tags": [
+            "printing"
+          ]
         },
         {
           "id": "desktop.auth",
@@ -117,7 +187,19 @@
             "packages/python/desktop/tests/test_contracts.py",
             "packages/python/desktop/tests/test_review_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/auth.md"
+          "guide": "packages/python/desktop/docs/guides/auth.md",
+          "kind": "library",
+          "summary": "密码哈希校验与应用注入的访问策略。",
+          "demo_ids": [
+            "desktop-core",
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/auth.py"
+          ],
+          "tags": [
+            "auth"
+          ]
         },
         {
           "id": "desktop.crud",
@@ -134,7 +216,21 @@
             "packages/python/desktop/tests/test_contracts.py",
             "packages/python/desktop/tests/test_review_qt.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/crud.md"
+          "guide": "packages/python/desktop/docs/guides/crud.md",
+          "kind": "component",
+          "summary": "注入仓储、授权和校验后组合资料管理流程。",
+          "demo_ids": [
+            "desktop-core",
+            "desktop-ui"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/crud.py",
+            "packages/python/desktop/src/ctf_desktop/crud_page.py"
+          ],
+          "tags": [
+            "crud",
+            "crud_page"
+          ]
         },
         {
           "id": "desktop.transport",
@@ -149,7 +245,18 @@
             "packages/python/desktop/tests/test_review_core.py",
             "packages/python/desktop/tests/test_extensions_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/transport.md"
+          "guide": "packages/python/desktop/docs/guides/transport.md",
+          "kind": "adapter",
+          "summary": "字节传输协议与可替换的串口适配。",
+          "demo_ids": [
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/transport.py"
+          ],
+          "tags": [
+            "transport"
+          ]
         },
         {
           "id": "desktop.services",
@@ -164,7 +271,19 @@
             "packages/python/desktop/tests/test_review_core.py",
             "packages/python/desktop/tests/test_extensions_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/services.md"
+          "guide": "packages/python/desktop/docs/guides/services.md",
+          "kind": "workflow",
+          "summary": "依赖拓扑启动、反序释放和启动失败回滚。",
+          "demo_ids": [
+            "desktop-core",
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/services.py"
+          ],
+          "tags": [
+            "services"
+          ]
         },
         {
           "id": "desktop.storage",
@@ -179,7 +298,19 @@
             "packages/python/desktop/tests/test_review_core.py",
             "packages/python/desktop/tests/test_extensions_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/storage.md"
+          "guide": "packages/python/desktop/docs/guides/storage.md",
+          "kind": "workflow",
+          "summary": "标准明文 SQLite 版本迁移、一致性备份与恢复。",
+          "demo_ids": [
+            "desktop-core",
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/storage.py"
+          ],
+          "tags": [
+            "storage"
+          ]
         },
         {
           "id": "desktop.query",
@@ -193,7 +324,19 @@
             "packages/python/desktop/tests/test_contracts.py",
             "packages/python/desktop/tests/test_review_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/query.md"
+          "guide": "packages/python/desktop/docs/guides/query.md",
+          "kind": "library",
+          "summary": "分页请求、白名单字段与参数绑定谓词。",
+          "demo_ids": [
+            "desktop-contracts",
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/query.py"
+          ],
+          "tags": [
+            "query"
+          ]
         },
         {
           "id": "desktop.runtime",
@@ -207,7 +350,19 @@
             "packages/python/desktop/tests/test_contracts.py",
             "packages/python/desktop/tests/test_review_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/runtime.md"
+          "guide": "packages/python/desktop/docs/guides/runtime.md",
+          "kind": "library",
+          "summary": "用户数据目录、JSON 配置检查和可选 Qt 单实例锁。",
+          "demo_ids": [
+            "desktop-failures",
+            "desktop-contracts"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/runtime.py"
+          ],
+          "tags": [
+            "runtime"
+          ]
         },
         {
           "id": "desktop.diagnostics",
@@ -222,7 +377,18 @@
             "packages/python/desktop/tests/test_review_core.py",
             "packages/python/desktop/tests/test_extensions_core.py"
           ],
-          "guide": "packages/python/desktop/docs/guides/diagnostics.md"
+          "guide": "packages/python/desktop/docs/guides/diagnostics.md",
+          "kind": "library",
+          "summary": "结构化日志、键名脱敏、轮转与追加审计。",
+          "demo_ids": [
+            "desktop-failures"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/diagnostics.py"
+          ],
+          "tags": [
+            "diagnostics"
+          ]
         },
         {
           "id": "desktop.background",
@@ -235,10 +401,32 @@
           "tests": [
             "packages/python/desktop/tests/test_background.py",
             "packages/python/desktop/tests/test_review_core.py"
+          ],
+          "kind": "workflow",
+          "summary": "有界后台查询、最新结果交付、协作取消和超时。",
+          "demo_ids": [
+            "desktop-search"
+          ],
+          "sources": [
+            "packages/python/desktop/src/ctf_desktop/background.py"
+          ],
+          "tags": [
+            "background"
           ]
         }
       ],
-      "documentation": "packages/python/desktop/docs/README.md"
+      "documentation": "packages/python/desktop/docs/README.md",
+      "origin_ids": [
+        "desktop-foundation"
+      ],
+      "license": "MIT"
+    }
+  ],
+  "origins": [
+    {
+      "id": "desktop-foundation",
+      "name": "桌面通用基础能力",
+      "provenance": "packages/python/desktop/docs/来源与迁入边界.md"
     }
   ]
 }

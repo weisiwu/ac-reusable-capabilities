@@ -28,6 +28,13 @@ def main(root=None):
     catalog = json.loads((ROOT / 'catalog.json').read_text())
     if not catalog['schema_version'] == 1:
         raise ValueError('invalid catalog')
+    origins = set()
+    for origin in catalog.get('origins', []):
+        if not origin.get('id') or origin['id'] in origins or not origin.get('name'):
+            raise ValueError('invalid or duplicate origin')
+        origins.add(origin['id'])
+        owned_path(origin['provenance'])
+    demo_ids = {item['id'] for item in json.loads((ROOT / 'demo/catalog.json').read_text())['demos']}
     ids, interface_ids = (set(), set())
     for package in catalog['packages']:
         if not package['id'] not in ids:
@@ -52,6 +59,22 @@ def main(root=None):
             if not capability['id'] not in ids:
                 raise ValueError('duplicate capability id')
             ids.add(capability['id'])
+            if not isinstance(capability.get('kind'), str) or not capability['kind'] or not isinstance(capability.get('summary'), str) or not capability['summary']:
+                raise ValueError('capability requires kind and summary')
+            sources = capability.get('sources')
+            if not isinstance(sources, list) or not sources:
+                raise ValueError('capability requires explicit sources')
+            for value in sources:
+                if not owned_path(value).resolve().is_relative_to(path.resolve()):
+                    raise ValueError('capability source outside its package')
+            for key in ('tags', 'demo_ids'):
+                if not isinstance(capability.get(key, []), list) or any(not isinstance(value, str) for value in capability.get(key, [])):
+                    raise ValueError(f'capability {key} must be string list')
+            if any(identity not in demo_ids for identity in capability.get('demo_ids', [])):
+                raise ValueError('capability references unknown demo')
+            origin_ids = capability.get('origin_ids', package.get('origin_ids', []))
+            if not isinstance(origin_ids, list) or any(identity not in origins for identity in origin_ids):
+                raise ValueError('capability references unknown origin')
             owned_path(capability['contract'])
             if 'guide' in capability:
                 owned_path(capability['guide'])

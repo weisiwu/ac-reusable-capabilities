@@ -65,3 +65,31 @@ class DemoTests(unittest.TestCase):
                     (root / 'demo/catalog.json').write_text(json.dumps(case))
                     with self.subTest(case=case), self.assertRaises(ValueError):
                         loader()
+
+    def test_non_python_and_documentation_entries_are_discoverable_not_executed(self):
+        import contextlib
+        import io
+        spec = importlib.util.spec_from_file_location('demo_runner_generic', SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / 'demo').mkdir()
+            (root / 'example.mjs').touch()
+            (root / 'guide.md').touch()
+            (root / 'catalog.json').write_text(json.dumps({'packages':[{'id':'typescript.frontend'}]}))
+            entry = dict(id='node-example',title='Node example',package_id='typescript.frontend',
+                         runtime='node',mode='local',command='node example.mjs',script='example.mjs',
+                         guide='guide.md',args=[],dependencies=[],smoke_args=None)
+            docs = dict(id='docs-example',title='Contract',package_id='typescript.frontend',mode='documentation',guide='guide.md')
+            (root / 'demo/catalog.json').write_text(json.dumps(dict(schema_version=1,demos=[entry,docs])))
+            module.ROOT = root
+            self.assertEqual(set(module._catalog()), {'node-example','docs-example'})
+            for identity, expected in [('node-example','node example.mjs'),('docs-example','guide.md')]:
+                stderr = io.StringIO()
+                with patch.object(sys,'argv',[str(SCRIPT),identity]), patch.object(module.os,'execv') as execute:
+                    with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as failure:
+                        module._main()
+                    self.assertEqual(failure.exception.code,1)
+                    self.assertIn(expected,stderr.getvalue())
+                    execute.assert_not_called()

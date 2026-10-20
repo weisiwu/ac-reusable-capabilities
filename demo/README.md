@@ -69,6 +69,6 @@ core、failures 与 contracts 本身会自动退出，不接受 `--smoke`。这�
 
 ## 后续添加其他项目的 demo
 
-真实示例放在 `packages/<language>/<domain>/examples/`，本目录只保留统一入口。更新 [demo 清单](catalog.json)，关联已有包 ID、脚本、指南、依赖与可选 smoke 参数；当前启动器支持 Python，其他运行时需要显式扩展并验证。不要为来源项目复制能力实现。
+真实示例放在 `packages/<language>/<domain>/examples/`，本目录只保留统一入口。更新 [demo 清单](catalog.json)，关联已有包 ID、脚本、指南、依赖与可选 smoke 参数；启动器仅直接执行 Python；其他运行时声明 runtime、command、install 后可登记、发现和展示，执行时按说明调用对应工具链。文档型条目使用 mode: documentation。完整字段与验证边界见 [多类型接入](../docs/多类型能力与站点接入.md)。不要为来源项目复制能力实现。
 
 提交前运行 `python demo/run.py --check` 和受影响示例；同步 [收录流程](../docs/能力收录流程.md) 与 CI。交互例子应有可自动退出的 smoke，所有成功与失败路径均释放演示资源。

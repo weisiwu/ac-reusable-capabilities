@@ -45,3 +45,16 @@ test('explicit cancellation settles the promise and releases timer', async () =>
   assert.deepEqual(await pending, {cancelled:true});
   assert.equal(latest.timer, null);
 });
+
+test('cross-language metadata and combined facets never depend on desktop IDs', () => {
+  const rows = [
+    {name:'Widget',id:'web.widget',package:'typescript.frontend',modules:['widget'],summary:'Reusable editing',tags:['form'],language:'typescript',domain:'frontend',kind:'component',origin_ids:['a'],modes:['browser','documentation']},
+    {name:'CLI task',id:'ops.task',package:'go.operations',modules:[],summary:'Batch processing',tags:['cli'],language:'go',domain:'operations',kind:'tool',origin_ids:['b'],modes:['local','documentation']},
+    {name:'Contract',id:'api.contract',package:'go.backend',modules:[],summary:'Data contract',tags:[],language:'go',domain:'backend',kind:'library',origin_ids:['a','b'],modes:['documentation']}
+  ];
+  assert.deepEqual(findCapabilities(rows,'',{language:'go',mode:'local'}).map(x=>x.id),['ops.task']);
+  assert.deepEqual(findCapabilities(rows,'editing',{domain:'frontend',kind:'component',origin:'a'}).map(x=>x.id),['web.widget']);
+  assert.equal(findCapabilities(rows,'',{language:'go',origin:'a',mode:'browser'}).length,0);
+  assert.equal(findCapabilities(rows,'',{mode:'documentation'}).length,3);
+  assert.equal(findCapabilities(rows,'cli').length,1);
+});
