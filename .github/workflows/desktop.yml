@@ -1,0 +1,37 @@
+name: desktop-contracts
+on:
+  pull_request:
+    paths: ['packages/python/desktop/**', 'catalog.json', 'scripts/check_catalog.py', '.github/workflows/desktop.yml']
+  push:
+    branches: [main]
+    paths: ['packages/python/desktop/**', 'catalog.json', 'scripts/check_catalog.py', '.github/workflows/desktop.yml']
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        extras: [test, all]
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - if: matrix.extras == 'all'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libopengl0 libxkbcommon-x11-0
+      - run: python scripts/check_catalog.py
+      - run: python -m pip install "./packages/python/desktop[${{ matrix.extras }}]" build
+      - if: matrix.extras == 'test'
+        run: python -m pytest -q packages/python/desktop/tests/test_core.py packages/python/desktop/tests/test_contracts.py
+      - if: matrix.extras == 'all'
+        run: python -m pytest -q packages/python/desktop/tests
+      - run: python packages/python/desktop/examples/desktop_demo.py
+      - if: matrix.extras == 'all'
+        run: python packages/python/desktop/examples/desktop_demo.py --qt
+      - run: python packages/python/desktop/examples/check_contract_examples.py
+      - if: matrix.extras == 'all'
+        run: python packages/python/desktop/examples/check_contract_examples.py --qt
+      - run: python -m build packages/python/desktop

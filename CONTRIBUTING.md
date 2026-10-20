@@ -4,7 +4,7 @@ category: "AI"
 tags: ["area/software-development", "type/contribution-policy"]
 summary: "规定复用评估、标准注释、稳定标记、测试与 MR 审阅要求。"
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-20
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -58,3 +58,9 @@ MR 对应 GitHub Pull Request。复用代码通过任务分支提交，不直接
 来源项目在本地知识库的个人项目专题中记录能力契约、测试依据和 MR 的真实链接与状态。专题名来自确认的项目名，优先匹配已有专题及别名。
 
 知识库保存审阅后的说明和引用，代码、依赖和执行产物留在知识库之外。能力被其他项目采用时，各项目分别验证适用性并更新自己的知识说明。
+
+## 多项目目录与能力归并
+
+统一遵循 [目录与收录规则](docs/目录与收录规则.md)。实现进入 `packages/<language>/<domain>`，按语言和能力领域组织，不按来源项目复制目录。`catalog.json` 是跨包检索入口；包内按职责拆模块。
+
+新增或扩展时同步能力索引、公开契约、测试、示例和来源记录。既有能力优先复用或兼容扩展，新增独立包需要明确边界和独立版本理由。提交前运行 `python scripts/check_catalog.py` 和受影响包验证。

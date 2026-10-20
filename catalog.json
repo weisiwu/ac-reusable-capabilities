@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "packages": [
+    {
+      "id": "python.desktop",
+      "language": "python",
+      "domain": "desktop",
+      "path": "packages/python/desktop",
+      "distribution": "common-tech-framework-desktop",
+      "import_package": "ctf_desktop",
+      "version": "0.1.0",
+      "status": "review-required",
+      "readme": "packages/python/desktop/README.md",
+      "examples": [
+        "packages/python/desktop/examples/desktop_demo.py",
+        "packages/python/desktop/examples/check_contract_examples.py"
+      ],
+      "capabilities": [
+        {
+          "id": "desktop.table",
+          "name": "数据表格与分页",
+          "modules": [
+            "table",
+            "query"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/table.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.forms",
+          "name": "配置表单与详情",
+          "modules": [
+            "forms"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/forms.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.filters",
+          "name": "筛选与联想输入",
+          "modules": [
+            "filters"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/filters.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.feedback",
+          "name": "基础反馈控件",
+          "modules": [
+            "feedback"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/feedback.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.navigation",
+          "name": "懒加载页面导航",
+          "modules": [
+            "navigation"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/navigation.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.printing",
+          "name": "批量打印调度",
+          "modules": [
+            "printing"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/printing.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.auth",
+          "name": "密码校验与访问授权",
+          "modules": [
+            "auth"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/auth.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.crud",
+          "name": "资料管理协调与页面",
+          "modules": [
+            "crud",
+            "crud_page"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/crud.md",
+          "tests": [
+            "packages/python/desktop/tests/test_qt.py",
+            "packages/python/desktop/tests/test_qt_contracts.py",
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.transport",
+          "name": "字节传输与串口",
+          "modules": [
+            "transport"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/transport.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.services",
+          "name": "服务生命周期",
+          "modules": [
+            "services"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/services.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.storage",
+          "name": "SQLite迁移备份恢复",
+          "modules": [
+            "storage"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/storage.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.query",
+          "name": "参数化查询工具",
+          "modules": [
+            "query"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/query.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.runtime",
+          "name": "目录配置与单实例",
+          "modules": [
+            "runtime"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/runtime.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        },
+        {
+          "id": "desktop.diagnostics",
+          "name": "结构化日志与审计",
+          "modules": [
+            "diagnostics"
+          ],
+          "contract": "packages/python/desktop/docs/contracts/diagnostics.md",
+          "tests": [
+            "packages/python/desktop/tests/test_core.py",
+            "packages/python/desktop/tests/test_contracts.py"
+          ]
+        }
+      ]
+    }
+  ]
+}
