@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T09:35:49.774635+00:00",
+  "title": "Design System: AC Lab / AC 能力库",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Working Blue",
+        "canonical": "#2457d6",
+        "tonalRamp": [
+          "oklch(15.0% 0.0726 263.88)",
+          "oklch(27.0% 0.1200 263.88)",
+          "oklch(39.0% 0.1505 263.88)",
+          "oklch(51.0% 0.1599 263.88)",
+          "oklch(63.0% 0.1468 263.88)",
+          "oklch(75.0% 0.1131 263.88)",
+          "oklch(87.0% 0.0635 263.88)",
+          "oklch(95.0% 0.0250 263.88)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep Ink",
+        "canonical": "#202939",
+        "tonalRamp": [
+          "oklch(15.0% 0.0147 261.69)",
+          "oklch(27.0% 0.0243 261.69)",
+          "oklch(39.0% 0.0304 261.69)",
+          "oklch(51.0% 0.0323 261.69)",
+          "oklch(63.0% 0.0297 261.69)",
+          "oklch(75.0% 0.0229 261.69)",
+          "oklch(87.0% 0.0128 261.69)",
+          "oklch(95.0% 0.0051 261.69)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Slate Text",
+        "canonical": "#59677d",
+        "tonalRamp": [
+          "oklch(15.0% 0.0177 259.36)",
+          "oklch(27.0% 0.0293 259.36)",
+          "oklch(39.0% 0.0367 259.36)",
+          "oklch(51.0% 0.0390 259.36)",
+          "oklch(63.0% 0.0358 259.36)",
+          "oklch(75.0% 0.0276 259.36)",
+          "oklch(87.0% 0.0155 259.36)",
+          "oklch(95.0% 0.0061 259.36)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "White Paper",
+        "canonical": "#fff",
+        "tonalRamp": [
+          "oklch(15.0% 0.0000 0.00)",
+          "oklch(27.0% 0.0000 0.00)",
+          "oklch(39.0% 0.0000 0.00)",
+          "oklch(51.0% 0.0000 0.00)",
+          "oklch(63.0% 0.0000 0.00)",
+          "oklch(75.0% 0.0000 0.00)",
+          "oklch(87.0% 0.0000 0.00)",
+          "oklch(95.0% 0.0000 0.00)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Navigation Mist",
+        "canonical": "#f5f7fb",
+        "tonalRamp": [
+          "oklch(15.0% 0.0026 264.53)",
+          "oklch(27.0% 0.0043 264.53)",
+          "oklch(39.0% 0.0054 264.53)",
+          "oklch(51.0% 0.0057 264.53)",
+          "oklch(63.0% 0.0053 264.53)",
+          "oklch(75.0% 0.0041 264.53)",
+          "oklch(87.0% 0.0023 264.53)",
+          "oklch(95.0% 0.0009 264.53)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Quiet Rule",
+        "canonical": "#dfe4ed",
+        "tonalRamp": [
+          "oklch(15.0% 0.0061 262.38)",
+          "oklch(27.0% 0.0100 262.38)",
+          "oklch(39.0% 0.0126 262.38)",
+          "oklch(51.0% 0.0134 262.38)",
+          "oklch(63.0% 0.0123 262.38)",
+          "oklch(75.0% 0.0094 262.38)",
+          "oklch(87.0% 0.0053 262.38)",
+          "oklch(95.0% 0.0021 262.38)"
+        ]
+      },
+      "control-line": {
+        "role": "neutral",
+        "displayName": "Control Stroke",
+        "canonical": "#bac5d6",
+        "tonalRamp": [
+          "oklch(15.0% 0.0122 259.05)",
+          "oklch(27.0% 0.0201 259.05)",
+          "oklch(39.0% 0.0252 259.05)",
+          "oklch(51.0% 0.0268 259.05)",
+          "oklch(63.0% 0.0246 259.05)",
+          "oklch(75.0% 0.0189 259.05)",
+          "oklch(87.0% 0.0106 259.05)",
+          "oklch(95.0% 0.0042 259.05)"
+        ]
+      },
+      "selected": {
+        "role": "primary",
+        "displayName": "Selected Blue Wash",
+        "canonical": "#e5edff",
+        "tonalRamp": [
+          "oklch(15.0% 0.0117 266.61)",
+          "oklch(27.0% 0.0193 266.61)",
+          "oklch(39.0% 0.0243 266.61)",
+          "oklch(51.0% 0.0258 266.61)",
+          "oklch(63.0% 0.0237 266.61)",
+          "oklch(75.0% 0.0182 266.61)",
+          "oklch(87.0% 0.0102 266.61)",
+          "oklch(95.0% 0.0040 266.61)"
+        ]
+      },
+      "success-ink": {
+        "role": "semantic",
+        "displayName": "Success Ink",
+        "canonical": "#1d6140",
+        "tonalRamp": [
+          "oklch(15.0% 0.0396 158.24)",
+          "oklch(27.0% 0.0654 158.24)",
+          "oklch(39.0% 0.0821 158.24)",
+          "oklch(51.0% 0.0872 158.24)",
+          "oklch(63.0% 0.0801 158.24)",
+          "oklch(75.0% 0.0617 158.24)",
+          "oklch(87.0% 0.0346 158.24)",
+          "oklch(95.0% 0.0136 158.24)"
+        ]
+      },
+      "success-surface": {
+        "role": "semantic",
+        "displayName": "Success Surface",
+        "canonical": "#eff8f2",
+        "tonalRamp": [
+          "oklch(15.0% 0.0056 157.00)",
+          "oklch(27.0% 0.0093 157.00)",
+          "oklch(39.0% 0.0116 157.00)",
+          "oklch(51.0% 0.0124 157.00)",
+          "oklch(63.0% 0.0113 157.00)",
+          "oklch(75.0% 0.0087 157.00)",
+          "oklch(87.0% 0.0049 157.00)",
+          "oklch(95.0% 0.0019 157.00)"
+        ]
+      },
+      "error-ink": {
+        "role": "semantic",
+        "displayName": "Error Ink",
+        "canonical": "#9c3535",
+        "tonalRamp": [
+          "oklch(15.0% 0.0625 23.91)",
+          "oklch(27.0% 0.1032 23.91)",
+          "oklch(39.0% 0.1295 23.91)",
+          "oklch(51.0% 0.1376 23.91)",
+          "oklch(63.0% 0.1263 23.91)",
+          "oklch(75.0% 0.0973 23.91)",
+          "oklch(87.0% 0.0547 23.91)",
+          "oklch(95.0% 0.0215 23.91)"
+        ]
+      },
+      "error-surface": {
+        "role": "semantic",
+        "displayName": "Error Surface",
+        "canonical": "#fdf1f1",
+        "tonalRamp": [
+          "oklch(15.0% 0.0059 17.38)",
+          "oklch(27.0% 0.0097 17.38)",
+          "oklch(39.0% 0.0122 17.38)",
+          "oklch(51.0% 0.0130 17.38)",
+          "oklch(63.0% 0.0119 17.38)",
+          "oklch(75.0% 0.0092 17.38)",
+          "oklch(87.0% 0.0051 17.38)",
+          "oklch(95.0% 0.0020 17.38)"
+        ]
+      },
+      "warning-ink": {
+        "role": "semantic",
+        "displayName": "Warning Ink",
+        "canonical": "#7e530f",
+        "tonalRamp": [
+          "oklch(15.0% 0.0436 72.23)",
+          "oklch(27.0% 0.0721 72.23)",
+          "oklch(39.0% 0.0904 72.23)",
+          "oklch(51.0% 0.0961 72.23)",
+          "oklch(63.0% 0.0882 72.23)",
+          "oklch(75.0% 0.0680 72.23)",
+          "oklch(87.0% 0.0382 72.23)",
+          "oklch(95.0% 0.0150 72.23)"
+        ]
+      },
+      "warning-surface": {
+        "role": "semantic",
+        "displayName": "Warning Surface",
+        "canonical": "#fff9ea",
+        "tonalRamp": [
+          "oklch(15.0% 0.0094 88.72)",
+          "oklch(27.0% 0.0155 88.72)",
+          "oklch(39.0% 0.0195 88.72)",
+          "oklch(51.0% 0.0207 88.72)",
+          "oklch(63.0% 0.0190 88.72)",
+          "oklch(75.0% 0.0147 88.72)",
+          "oklch(87.0% 0.0082 88.72)",
+          "oklch(95.0% 0.0032 88.72)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Documentation h1; reduces to 26px at 600px."
+      },
+      "page-title": {
+        "displayName": "Page Title",
+        "purpose": "Catalog, example, and scenario h1."
+      },
+      "section-title": {
+        "displayName": "Section Title",
+        "purpose": "Documentation h2; reduces to 20px at 600px."
+      },
+      "subsection-title": {
+        "displayName": "Subsection Title",
+        "purpose": "Documentation h3; reduces to 17px at 600px."
+      },
+      "group-title": {
+        "displayName": "Group Title",
+        "purpose": "Catalog group heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading paragraphs and introductory summaries."
+      },
+      "dense-body": {
+        "displayName": "Dense Body",
+        "purpose": "Entry summaries, tables, and result text."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Operating-example buttons and supporting actions."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Supporting group labels and metadata."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Documentation code; example logs use a 12px variant."
+      }
+    },
+    "shadows": [
+      {
+        "name": "toast",
+        "value": "0 6px 24px #20293924",
+        "purpose": "Transient showcase toast only; resting content is flat."
+      }
+    ],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "docs-without-outline",
+        "value": "1180px"
+      },
+      {
+        "name": "docs-mobile-navigation",
+        "value": "900px"
+      },
+      {
+        "name": "docs-small",
+        "value": "600px"
+      },
+      {
+        "name": "showcase-two-column-entries",
+        "value": "1121px"
+      },
+      {
+        "name": "showcase-compact",
+        "value": "1120px"
+      },
+      {
+        "name": "showcase-two-column-workspace",
+        "value": "1000px"
+      },
+      {
+        "name": "showcase-wide-table-result",
+        "value": "1280px"
+      },
+      {
+        "name": "showcase-mobile-navigation",
+        "value": "760px"
+      },
+      {
+        "name": "showcase-small",
+        "value": "420px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action in an operating example.",
+      "html": "<button class=\"ds-button-primary\" type=\"button\">保存更改</button>",
+      "css": ".ds-button-primary{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);font-size:13px;line-height:1.5;padding:8px 12px;border:1px solid #bac5d6;border-radius:var(--control-radius,6px);cursor:pointer;background:var(--accent,#2457d6);border-color:var(--accent,#2457d6);color:#fff}.ds-button-primary:hover:not(:disabled){background:#1e48b5;border-color:#1e48b5}.ds-button-primary:active:not(:disabled){background:#193f9e}.ds-button-primary:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}.ds-button-primary:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Reset, cancel, or a supporting action.",
+      "html": "<button class=\"ds-button-secondary\" type=\"button\">重置样例</button>",
+      "css": ".ds-button-secondary{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);font-size:13px;line-height:1.5;padding:8px 12px;border:1px solid #bac5d6;border-radius:var(--control-radius,6px);cursor:pointer;background:var(--paper,#fff);color:var(--ink,#202939)}.ds-button-secondary:hover:not(:disabled){background:var(--surface,#f5f7fb);border-color:#8f9eb6}.ds-button-secondary:active:not(:disabled){background:#e9eef8}.ds-button-secondary:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}.ds-button-secondary:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Catalog query field with a visible programmatic label.",
+      "html": "<label class=\"ds-search-label\">搜索能力<input class=\"ds-search\" type=\"search\" placeholder=\"搜索能力、场景或关键词\"></label>",
+      "css": ".ds-search-label{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);display:grid;gap:6px;font-size:13px;color:var(--ink,#202939);max-width:640px}.ds-search{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);font-size:15px;line-height:1.5;min-height:40px;min-width:0;padding:8px 12px;border:1px solid #bac5d6;border-radius:var(--control-radius,6px);background:var(--paper,#fff);color:var(--ink,#202939);caret-color:var(--accent,#2457d6)}.ds-search::placeholder{color:#64738a;opacity:1}.ds-search:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}.ds-search:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "sidebar-navigation",
+      "description": "Compact current-location treatment in the showcase navigation.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"能力分组\"><a href=\"#catalog\" aria-current=\"page\">全部能力</a><a href=\"#group/ui\">界面与交互</a></nav>",
+      "css": ".ds-nav{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);display:grid;gap:4px;background:var(--surface,#f5f7fb);padding:16px;max-width:232px}.ds-nav a{display:flex;align-items:center;min-height:36px;padding:6px 10px;border-radius:5px;font-size:13px;line-height:1.6;color:var(--ink,#202939);text-decoration:none}.ds-nav a:hover{background:#eaf0f8;color:var(--accent,#2457d6)}.ds-nav a[aria-current]{color:var(--accent,#2457d6);background:#e7eefc;font-weight:600}.ds-nav a:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}"
+    },
+    {
+      "name": "State Badge",
+      "kind": "chip",
+      "refersTo": "state-badge",
+      "description": "A compact reported state, with its meaning written out.",
+      "html": "<span class=\"ds-badge\">模拟数据</span> <span class=\"ds-badge ds-badge-success\">已保存</span>",
+      "css": ".ds-badge{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);display:inline-block;padding:2px 6px;border-radius:4px;color:var(--muted,#59677d);background:#edf1f7;font-size:11px;line-height:1.5;white-space:nowrap}.ds-badge-success{color:#1d6140;background:#e7f3eb}"
+    },
+    {
+      "name": "Capability Entry",
+      "kind": "custom",
+      "description": "Flat directory entry with an experience destination and a subordinate documentation link.",
+      "html": "<article class=\"ds-entry\"><div><a class=\"ds-entry-title\" href=\"#demo/table\">表格与数据查看<svg viewBox=\"0 0 20 20\" aria-hidden=\"true\" fill=\"none\"><path d=\"M4 10h11m-4-4 4 4-4 4\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a><p>从已有记录开始，体验筛选、翻页与详情。</p></div><a class=\"ds-entry-doc\" href=\"./docs/README.html\">使用文档</a></article>",
+      "css": ".ds-entry{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 0;border-top:1px solid var(--line,#dfe4ed)}.ds-entry>div{min-width:0}.ds-entry-title{display:inline-flex;align-items:center;gap:8px;color:var(--ink,#202939);font-size:14px;line-height:1.6;font-weight:600;text-decoration:none}.ds-entry-title svg{width:15px;height:15px;flex-shrink:0;color:var(--muted,#59677d)}.ds-entry p{margin:5px 0 0;max-width:64ch;color:var(--muted,#59677d);font-size:13px;line-height:1.65}.ds-entry-doc{flex-shrink:0;padding-top:2px;font-size:12px;line-height:1.6;color:var(--muted,#59677d);white-space:nowrap;text-decoration:none}.ds-entry a:hover,.ds-entry-title:hover svg{color:var(--accent,#2457d6);text-decoration:underline}.ds-entry a:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}"
+    },
+    {
+      "name": "Result Surface",
+      "kind": "card",
+      "refersTo": "result-surface",
+      "description": "A result region within an otherwise flat work area.",
+      "html": "<section class=\"ds-result\"><h3>查询结果</h3><p>找到 12 条匹配记录。</p></section>",
+      "css": ".ds-result{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);padding:20px;border-radius:8px;background:var(--surface,#f5f7fb);color:var(--ink,#202939);font-size:13px;overflow-wrap:anywhere}.ds-result h3{margin:0 0 12px;font-size:14px;line-height:1.6;font-weight:600}.ds-result p{margin:0;line-height:1.75}@media(max-width:760px){.ds-result{padding:16px}}"
+    },
+    {
+      "name": "Status Message",
+      "kind": "custom",
+      "refersTo": "status-message",
+      "description": "Text-bearing success feedback with a quiet semantic surface.",
+      "html": "<p class=\"ds-status\" role=\"status\">已保存更改，样例数据已更新。</p>",
+      "css": ".ds-status{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);margin:16px 0;padding:10px 12px;border:1px solid #c2decf;border-radius:6px;background:#eff8f2;color:#1d6140;font-size:13px;line-height:1.7}"
+    },
+    {
+      "name": "Data Table",
+      "kind": "custom",
+      "description": "Operational data with tabular numbers, horizontal rules, and local overflow.",
+      "html": "<div class=\"ds-table-wrap\"><table class=\"ds-table\"><thead><tr><th>记录</th><th>状态</th><th>数量</th></tr></thead><tbody><tr><td>样例记录 A</td><td>可用</td><td>12</td></tr><tr><td>样例记录 B</td><td>可用</td><td>8</td></tr></tbody></table></div>",
+      "css": ".ds-table-wrap{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);max-width:100%;overflow:auto}.ds-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.65;font-variant-numeric:tabular-nums;color:var(--ink,#202939)}.ds-table th,.ds-table td{min-width:88px;padding:10px 12px;border-bottom:1px solid var(--line,#dfe4ed);text-align:left;vertical-align:middle}.ds-table th{background:var(--surface,#f5f7fb);color:var(--muted,#59677d);font-size:12px;font-weight:600;white-space:nowrap}.ds-table td:first-child{min-width:140px}.ds-table tbody tr:hover{background:#f7f9fd}@media(max-width:760px){.ds-table th,.ds-table td{padding:9px 10px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Technical Standards Index",
+    "overview": "AC Lab uses the order of a technical standards index: aligned entries, clear grouping, quiet navigation, and a direct path from a capability to its example or documentation. White is the working page; pale blue-gray separates navigation and results; a single blue identifies links, the current location, and primary actions.\n\nReading and operating share colors, type, controls, and navigation cues. Their layouts follow the task: the catalog is a compact grouped index, an example is a populated work area, and documentation is a narrower reading column with a chapter outline. System sans-serif type is intentional for these Read and Operate modes; no display-face pairing or illustration is required.",
+    "keyCharacteristics": [
+      "Compact hierarchy with explicit groups and dividers.",
+      "Blue for action and location; semantic color for actual state.",
+      "Flat surfaces, restrained corners, and visible keyboard focus.",
+      "Task-specific layouts within one document vocabulary."
+    ],
+    "rules": [
+      {
+        "name": "The Blue Has Work Rule",
+        "body": "Use the primary blue for links, actions, focus, progress, and current position. Semantic green, amber, and red belong to reported states, rather than decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Reading Rhythm Rule",
+        "body": "Use the shared sans-serif family and modest heading hierarchy. Keep supporting metadata smaller and muted, and reserve monospace for code and logs.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Work Area Rule",
+        "body": "Keep the page and its index rows flat. Distinguish a result region by its pale surface; do not add a new frame around every operation or nest result panels for decoration.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do retain the common palette, type family, control shapes, focus treatment, and navigation cues across different task layouts.",
+      "Do keep catalog entries aligned and separated by rules, with summaries and documentation links subordinate to the capability title.",
+      "Do give documentation a bounded reading column, while allowing operational tables and result areas to use the available workspace.",
+      "Do expose actual selected, disabled, success, warning, and error states with text as well as their visual treatment.",
+      "Do preserve horizontal scrolling for wide tables and code, and collapse navigation at the breakpoint for its own task layout."
+    ],
+    "donts": [
+      "Don't turn the shared visual vocabulary into a requirement that the catalog, examples, and documentation use an identical shell or content width.",
+      "Don't replace the grouped index with nested promotional cards or add shadows to resting content surfaces.",
+      "Don't introduce a separate display font, decorative color family, or animated reveal without an approved system change.",
+      "Don't hide keyboard focus, rely on color alone for status, or shrink code and table columns merely to force them into a narrow viewport."
+    ]
+  }
+}

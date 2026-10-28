@@ -2,6 +2,42 @@
 const scriptRoot = new URL('../', document.currentScript.src);
 const search = document.getElementById('doc-search');
 const results = document.getElementById('search-results');
+const navigationToggle = document.getElementById('docs-nav-toggle');
+const navigationPanel = document.getElementById('docs-navigation-panel');
+if (navigationToggle && navigationPanel) {
+  const narrowViewport = window.matchMedia('(max-width: 900px)');
+  let navigationOpen = false;
+  const syncNavigation = () => {
+    const expanded = !narrowViewport.matches || navigationOpen;
+    navigationPanel.hidden = !expanded;
+    navigationToggle.setAttribute('aria-expanded', String(expanded));
+    const label = navigationToggle.querySelector('[data-docs-nav-label]');
+    if (label) label.textContent = expanded ? '收起' : '展开';
+  };
+  document.body.classList.add('docs-navigation-ready');
+  navigationToggle.addEventListener('click', () => {
+    navigationOpen = !navigationOpen;
+    syncNavigation();
+  });
+  narrowViewport.addEventListener('change', () => {
+    navigationOpen = false;
+    syncNavigation();
+  });
+  navigationPanel.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && narrowViewport.matches && navigationOpen) {
+      navigationOpen = false;
+      syncNavigation();
+      navigationToggle.focus();
+    }
+  });
+  navigationPanel.addEventListener('click', event => {
+    if (narrowViewport.matches && event.target.closest('a')) {
+      navigationOpen = false;
+      syncNavigation();
+    }
+  });
+  syncNavigation();
+}
 search.addEventListener('input', () => {
   const query = search.value.trim().toLocaleLowerCase();
   results.replaceChildren();
@@ -45,8 +81,16 @@ for (const block of document.querySelectorAll('.doc-content pre:not(.mermaid)'))
 }
 async function diagrams() {
   if (!window.mermaid) return;
-  window.mermaid.initialize({startOnLoad: false, securityLevel: 'strict', theme: 'neutral',
-    fontFamily: 'system-ui, sans-serif', flowchart: {htmlLabels: false, useMaxWidth: true}});
+  const tokens = getComputedStyle(document.documentElement);
+  const ink = tokens.getPropertyValue('--ink').trim() || '#202939';
+  const surface = tokens.getPropertyValue('--surface').trim() || '#f5f7fb';
+  const line = tokens.getPropertyValue('--line').trim() || '#dfe4ed';
+  const muted = tokens.getPropertyValue('--muted').trim() || '#59677d';
+  window.mermaid.initialize({startOnLoad: false, securityLevel: 'strict', theme: 'base',
+    fontFamily: tokens.getPropertyValue('--font-sans').trim() || 'system-ui, sans-serif',
+    themeVariables: {primaryColor: surface, primaryTextColor: ink, primaryBorderColor: line,
+      lineColor: muted, secondaryColor: '#e5edff', tertiaryColor: '#fff'},
+    flowchart: {htmlLabels: false, useMaxWidth: true}});
   for (const diagram of document.querySelectorAll('.mermaid')) {
     const original = diagram.textContent;
     try { await window.mermaid.run({nodes: [diagram]}); }
@@ -57,4 +101,8 @@ async function diagrams() {
   }
 }
 diagrams();
-window.addEventListener('pagehide', () => clearTimeout(copyTimer));
+window.addEventListener('pagehide', () => {
+  clearTimeout(copyTimer);
+  const status = document.querySelector('.copy-status');
+  if (status) status.hidden = true;
+});
