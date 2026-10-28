@@ -155,7 +155,7 @@ The palette is cool, legible, and mostly neutral. The frontmatter is the normati
 ### Primary
 
 - **Working Blue** (`primary`) marks links, primary buttons, checked controls, progress, keyboard focus, and the active header destination.
-- **Selected Blue Wash** (`selected`) supports current documentation navigation; the showcase uses a closely related pale-blue selection surface.
+- **Selected Blue Wash** (`selected`) supports current navigation in both the showcase and documentation.
 
 ### Neutral
 
@@ -215,7 +215,7 @@ Resting content uses no shadows. Pale backgrounds, one-pixel rules, text hierarc
 
 ## Shapes
 
-Controls have gently curved corners using the control radius. Inline code is tighter, badges slightly softer, and result surfaces use the larger result radius. Showcase sidebar links use the app-navigation radius; documentation links use the control radius. All are restrained rectangles. List and table rows remain square and are defined by a bottom or top rule rather than individual boxes. SVG arrows and interface icons are small, single-color line marks.
+Controls have gently curved corners using the control radius. Inline code is tighter, badges slightly softer, and result surfaces use the larger result radius. Both showcase and documentation sidebar links use the app-navigation radius. All are restrained rectangles. List and table rows remain square and are defined by a bottom or top rule rather than individual boxes. SVG arrows and interface icons are small, single-color line marks.
 
 ## Components
 
@@ -233,7 +233,7 @@ White controls use the same stroke, radius, and padding as buttons, with dark en
 
 ### Navigation
 
-The header uses a (20px), weight (750) wordmark, a (14px) destination row, and a blue underline for the current destination. On small screens the wordmark becomes (19px) and destinations (13px). Sidebar navigation is compact (13px), with small muted group labels, a pale hover surface, and a blue-tinted current item. Current location is represented semantically with `aria-current`; example tabs use their selected state. Mobile navigation expands in normal document flow, with labeled controls and Escape returning focus to the trigger.
+The header uses a (20px), weight (750) wordmark, a (14px) destination row, and a blue underline for the current destination. On small screens the wordmark becomes (19px) and destinations (13px). Both sidebars share a compact (13px) accordion: native details/summary group controls, a (36px) minimum row height, a (4px) group gap, and (12px) child indentation. The current page’s group opens by default; opening another closes its peer, and every group can be collapsed. Group headings and links share a pale hover surface and visible focus; the current item uses Selected Blue Wash. Current location is represented semantically with `aria-current`; example tabs use their selected state. Mobile navigation expands in normal document flow, with labeled controls and Escape returning focus to the trigger.
 
 ### Capability entries
 

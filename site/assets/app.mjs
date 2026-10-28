@@ -78,13 +78,33 @@ function renderNavigation() {
   }
   const nav = $('demo-navigation'); nav.replaceChildren();
   for (const name of [...new Set(scenes.map(scene => scene.group || '功能体验'))]) {
-    const section = element('div', undefined, 'demo-nav-group');
-    section.append(element('p', name, 'nav-group-title'));
-    for (const scene of scenes.filter(item => (item.group || '功能体验') === name)) {
+    const items = scenes.filter(item => (item.group || '功能体验') === name);
+    const section = element('details', undefined, 'demo-nav-group sidebar-group');
+    section.setAttribute('name', 'demo-navigation-groups');
+    section.open = items.includes(currentScene);
+    const summary = element('summary', name, 'sidebar-group-title');
+    section.append(summary);
+    const links = element('div', undefined, 'sidebar-group-items');
+    for (const scene of items) {
       const anchor = link(element('a', scene.title), `#demo/${encodeURIComponent(scene.renderer)}`);
       if (scene === currentScene) anchor.setAttribute('aria-current', 'page');
-      section.append(anchor);
+      links.append(anchor);
     }
+    section.append(links);
+    const closeOtherGroups = () => {
+      // A replaced navigation can still deliver an already queued toggle event.
+      if (!nav.contains(section)) return;
+      for (const peer of nav.querySelectorAll('.sidebar-group')) {
+        if (peer !== section) peer.open = false;
+      }
+    };
+    // Native details supplies keyboard/expanded semantics; close peers on older browsers too.
+    summary.addEventListener('click', () => {
+      if (!section.open) closeOtherGroups();
+    });
+    section.addEventListener('toggle', () => {
+      if (section.open) closeOtherGroups();
+    });
     nav.append(section);
   }
   document.querySelectorAll('.sidebar-links a').forEach(anchor => {

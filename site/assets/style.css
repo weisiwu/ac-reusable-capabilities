@@ -34,9 +34,8 @@ h1[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; }
   scrollbar-width: thin;
 }
 #app-menu-toggle { display: none; }
-#catalog-navigation, #demo-navigation { display: grid; gap: 20px; }
-#catalog-navigation { gap: 4px; }
-#catalog-navigation > a, #demo-navigation a, .sidebar-links a {
+#catalog-navigation { display: grid; gap: 4px; }
+#catalog-navigation > a, .sidebar-links a {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -50,24 +49,13 @@ h1[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; }
   overflow-wrap: anywhere;
 }
 #catalog-navigation > a { justify-content: space-between; }
-#catalog-navigation > a span, #demo-navigation a small { color: var(--muted); font-size: 12px; }
-#catalog-navigation a:hover, #demo-navigation a:hover, .sidebar-links a:hover { background: #eaf0f8; color: var(--accent); }
-#catalog-navigation a[aria-current], #demo-navigation a[aria-current],
-#catalog-navigation a.is-active, #demo-navigation a.is-active {
+#catalog-navigation > a span { color: var(--muted); font-size: 12px; }
+#catalog-navigation a:hover, .sidebar-links a:hover { background: #eaf0f8; color: var(--accent); }
+#catalog-navigation a[aria-current], #catalog-navigation a.is-active {
   color: var(--accent);
   background: #e7eefc;
   font-weight: 600;
 }
-#catalog-navigation h2, #catalog-navigation h3, #demo-navigation h2, #demo-navigation h3,
-#demo-navigation .nav-group-title, #demo-navigation .demo-group-title {
-  margin: 0 0 6px;
-  padding: 0 10px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.6;
-}
-#demo-navigation section, #demo-navigation .nav-group, #demo-navigation .demo-group { min-width: 0; }
 #demo-navigation .empty { margin: 0; padding: 8px 10px; }
 .sidebar-links {
   display: grid;

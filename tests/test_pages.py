@@ -1,5 +1,6 @@
 """Verify Pages artifacts and links without installing desktop dependencies."""
 import json
+from html.parser import HTMLParser
 from pathlib import Path
 import subprocess
 import sys
@@ -8,6 +9,33 @@ import unittest
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class SidebarGroups(HTMLParser):
+    """Read the published navigation semantics independently of whitespace and styling."""
+    def __init__(self):
+        super().__init__()
+        self.in_navigation = False
+        self.current_group = None
+        self.groups = []
+
+    def handle_starttag(self, tag, attributes):
+        attrs = dict(attributes)
+        if tag == 'nav':
+            self.in_navigation = attrs.get('aria-label') == '文档目录'
+        if not self.in_navigation:
+            return
+        if tag == 'details':
+            self.current_group = dict(open='open' in attrs, name=attrs.get('name'), current=False)
+            self.groups.append(self.current_group)
+        elif tag == 'a' and attrs.get('aria-current') == 'page' and self.current_group is not None:
+            self.current_group['current'] = True
+
+    def handle_endtag(self, tag):
+        if tag == 'details':
+            self.current_group = None
+        elif tag == 'nav':
+            self.in_navigation = False
 
 
 class PagesTests(unittest.TestCase):
@@ -55,9 +83,20 @@ class PagesTests(unittest.TestCase):
             self.assertEqual(sum(item['path'] == 'docs/快速开始.html' for item in index), 1)
             home = (output / 'docs/README.html').read_text(encoding='utf-8')
             for label in ['快速开始', '能力指南', '接口参考', '版本兼容', '组合排障', '贡献维护']:
-                self.assertIn(f'<summary>{label}</summary>', home)
+                self.assertIn(f'>{label}</summary>', home)
             self.assertNotIn('>Wiki</a>', home)
             self.assertNotIn('>Docs</a>', home)
+            for page in output.rglob('*.html'):
+                html = page.read_text(encoding='utf-8')
+                if 'class="docs-page"' not in html:
+                    continue
+                navigation = SidebarGroups()
+                navigation.feed(html)
+                self.assertTrue(navigation.groups, str(page))
+                self.assertEqual({group['name'] for group in navigation.groups}, {'docs-navigation-groups'})
+                self.assertEqual(sum(group['open'] for group in navigation.groups), 1, str(page))
+                self.assertTrue(any(group['open'] and group['current'] for group in navigation.groups), str(page))
+
 
     def test_invalid_repository_rejected_before_writing(self):
         with tempfile.TemporaryDirectory() as directory:
