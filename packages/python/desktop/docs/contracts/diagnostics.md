@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "diagnostics"]
 summary: "diagnostics 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -13,6 +13,29 @@ article_status: published
 # desktop.diagnostics
 
 导入路径：`ctf_desktop.diagnostics`。场景接入见 [使用指南](../guides/diagnostics.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `redact` | `redact(value: Any, is_sensitive: Callable[[str], bool] \| None=None) -> Any` |
+| `JsonFormatter` | `JsonFormatter(is_sensitive: Callable[[str], bool] \| None=None)` |
+| `JsonFormatter.format` | `format(record: logging.LogRecord) -> str` |
+| `configure_json_logger` | `configure_json_logger(name: str, path: str \| Path, is_sensitive=None, *, level: int=logging.INFO, max_bytes: int=5 * 1024 * 1024, backup_count: int=3) -> logging.Logger` |
+| `AuditEvent` | `AuditEvent(action: str, actor: str, resource: str, detail: Mapping[str, Any])` |
+| `AuditJournal` | `AuditJournal(path: str \| Path, is_sensitive=None)` |
+| `AuditJournal.append` | `append(event: AuditEvent) -> None` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `AuditEvent.action` | `str` | 必填 |
+| `AuditEvent.actor` | `str` | 必填 |
+| `AuditEvent.resource` | `str` | 必填 |
+| `AuditEvent.detail` | `Mapping[str, Any]` | 必填 |
 
 ## redact
 

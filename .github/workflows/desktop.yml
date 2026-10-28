@@ -26,6 +26,7 @@ jobs:
       - run: python -O scripts/check_catalog.py
       - run: python scripts/check_docs.py
       - run: python demo/run.py --check
+      - run: python -m pip install -r site/requirements.txt
       - run: python -m unittest discover -s tests -v
       - run: python -m pip install "./packages/python/desktop[${{ matrix.extras }}]" build
       - if: matrix.extras == 'test'

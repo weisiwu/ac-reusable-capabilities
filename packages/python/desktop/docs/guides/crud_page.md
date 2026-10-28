@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "crud_page", "type/usage-guide"]
 summary: "管理页面组合的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 管理页面组合
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | Qt；`QApplication`；已配置控制器 |
+| 核心入口 | `CrudPage`，配合 `Column` / `FieldSpec` |
+| 调用顺序 | 初始化字段 → load_page → 用户操作 → 控制器 → 刷新 |
+| 关键边界 | `operation_failed(action,error)`；写后刷新失败不能盲目重试写入 |
+| 方法 / 属性 | `load_page`, `create_record`, `edit_selected`, `show_detail`, `delete_selected` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["初始化字段"]
+    N1["load_page"]
+    N0 --> N1
+    N2["用户操作"]
+    N1 --> N2
+    N3["控制器"]
+    N2 --> N3
+    N4["刷新"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

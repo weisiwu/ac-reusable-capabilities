@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "query", "type/usage-guide"]
 summary: "分页与查询的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 分页与查询
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 标准库；无连接或线程资源 |
+| 核心入口 | `PageRequest` / `PageResult` / `SqlWhere` |
+| 调用顺序 | 验证分页 → 白名单条件 → build → 仓储执行 → 返回页结果 |
+| 关键边界 | 页号 / 页大小正整数；SQL 与绑定参数分开；不执行查询 |
+| 方法 / 属性 | `offset`, `pages`, `equal`, `contains`, `range`, `build` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["验证分页"]
+    N1["白名单条件"]
+    N0 --> N1
+    N2["build"]
+    N1 --> N2
+    N3["仓储执行"]
+    N2 --> N3
+    N4["返回页结果"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

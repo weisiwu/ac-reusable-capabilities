@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "printing", "type/usage-guide"]
 summary: "批量打印调度的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 批量打印调度
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 标准库；应用注入 prepare / submit |
+| 核心入口 | `BatchPrintRunner` / `PrintItem` |
+| 调用顺序 | 准备成品 → 逐份取消检查 → 提交 → 统计结果 → close |
+| 关键边界 | 计数表示提交；未知提交错误停止且不自动重试 |
+| 方法 / 属性 | `run`, `start`, `close` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["准备成品"]
+    N1["逐份取消检查"]
+    N0 --> N1
+    N2["提交"]
+    N1 --> N2
+    N3["统计结果"]
+    N2 --> N3
+    N4["close"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

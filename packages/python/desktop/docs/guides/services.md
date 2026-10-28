@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "services", "type/usage-guide"]
 summary: "服务生命周期的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 服务生命周期
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 标准库；同一拥有者线程调度生命周期 |
+| 核心入口 | `ServiceSpec` / `ServiceRegistry` |
+| 调用顺序 | register → 拓扑排序 → start → get → 反序 stop |
+| 关键边界 | 缺依赖 / 环在实例创建前拒绝；启动失败回滚已返回实例 |
+| 方法 / 属性 | `register`, `start`, `get`, `stop` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["register"]
+    N1["拓扑排序"]
+    N0 --> N1
+    N2["start"]
+    N1 --> N2
+    N3["get"]
+    N2 --> N3
+    N4["反序 stop"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

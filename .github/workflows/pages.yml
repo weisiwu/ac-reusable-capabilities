@@ -1,10 +1,10 @@
 name: demo-pages
 on:
   pull_request:
-    paths: ['site/**', 'catalog.json', 'demo/catalog.json', 'tests/**', 'scripts/**', 'docs/**', 'wiki/**', 'packages/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'catalog.json', 'demo/**', 'README.md', 'CONTRIBUTING.md', 'tests/**', 'scripts/**', 'docs/**', 'wiki/**', 'packages/**', '.github/workflows/pages.yml']
   push:
     branches: [main]
-    paths: ['site/**', 'catalog.json', 'demo/catalog.json', 'tests/**', 'scripts/**', 'docs/**', 'wiki/**', 'packages/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'catalog.json', 'demo/**', 'README.md', 'CONTRIBUTING.md', 'tests/**', 'scripts/**', 'docs/**', 'wiki/**', 'packages/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,12 +22,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: python -m pip install -r site/requirements.txt
       - run: python scripts/check_catalog.py
       - run: python scripts/check_docs.py
       - run: python demo/run.py --check
       - run: python -m unittest discover -s tests -v
       - run: node --test site/tests/*.test.mjs
       - run: node --check site/assets/app.mjs
+      - run: node --check site/assets/docs.js
       - run: python site/build.py
       - uses: actions/upload-pages-artifact@v3
         with:

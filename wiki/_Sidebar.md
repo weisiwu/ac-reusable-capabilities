@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/handbook", "能力复用"]
 summary: "仓库 Wiki 的页面导航。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,7 @@ article_status: published
 
 - [首页](Home.md)
 - [上手步骤](Getting-Started.md)
+- [版本与兼容选择](Compatibility.md)
 - [能力地图](Capabilities.md)
 - [接入场景](Recipes.md)
 - [常见问题](Troubleshooting.md)

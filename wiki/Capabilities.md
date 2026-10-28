@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/handbook", "能力复用"]
 summary: "按稳定能力 ID 查找当前实现、场景指南与精确契约。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -13,6 +13,29 @@ article_status: published
 # 能力地图
 
 当前包为 `python.desktop`。此表提供人工导航，机器检索使用 [catalog.json](../catalog.json)；模块的额外依赖与行为以契约为准。
+
+## 如何选择
+
+```mermaid
+flowchart TD
+    A[确认想实现的功能] --> B{是否需要界面组件}
+    B -->|是| C[安装 qt extra 并准备 Qt 事件循环]
+    B -->|否| D[优先选择标准库基础模块]
+    C --> E[选择下表指南]
+    D --> E
+    E --> F[核对参数与属性契约]
+    F --> G[运行最小例子并接入项目]
+```
+
+| 环境路径 | 能力 |
+| --- | --- |
+| 标准库基础能力 | auth、crud、diagnostics、printing、query、services、storage |
+| Qt 界面 / 交付 | background、crud_page、feedback、filters、forms、navigation、table |
+| 按使用方式启用依赖 | runtime 的路径 / JSON 无 Qt；SingleInstance 需 Qt；transport 的真实串口需 pyserial，注入假句柄不需要 |
+
+详细版本下限与验证范围见 [兼容要求](Compatibility.md)。浏览器中的模拟只对应部分交互场景，不执行这些 Python 模块。
+
+## 全部能力
 
 | 能力 | 稳定 ID | 权威文档 |
 | --- | --- | --- |

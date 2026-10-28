@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "filters", "type/usage-guide"]
 summary: "筛选与联想输入的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 筛选与联想输入
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | Qt；防抖计时器依赖事件循环 |
+| 核心入口 | `FilterPanel` / `LiveSearchComboBox` |
+| 调用顺序 | 输入 → 防抖 → request_started → 查询 → set_results |
+| 关键边界 | 旧请求返回 `False`；非法结果不改旧选项；日期先后关系由应用校验 |
+| 方法 / 属性 | `values`, `clear`, `set_results` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["输入"]
+    N1["防抖"]
+    N0 --> N1
+    N2["request_started"]
+    N1 --> N2
+    N3["查询"]
+    N2 --> N3
+    N4["set_results"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

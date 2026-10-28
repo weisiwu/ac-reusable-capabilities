@@ -4,13 +4,43 @@ category: "工程能力"
 tags: ["desktop", "navigation", "type/usage-guide"]
 summary: "页面导航的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 页面导航
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | Qt；页面工厂与 hook 不阻塞事件线程 |
+| 核心入口 | `PageSpec` / `PageHost` |
+| 调用顺序 | register → navigate → 懒创建 → on_enter → 离开 → dispose |
+| 关键边界 | 回调重入抛 `RuntimeError`；失败清理与恢复见下文 |
+| 方法 / 属性 | `register`, `navigate`, `dispose` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["register"]
+    N1["navigate"]
+    N0 --> N1
+    N2["懒创建"]
+    N1 --> N2
+    N3["on_enter"]
+    N2 --> N3
+    N4["离开"]
+    N3 --> N4
+    N5["dispose"]
+    N4 --> N5
+```
+
 
 ## 适用场景
 

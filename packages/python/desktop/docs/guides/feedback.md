@@ -4,13 +4,39 @@ category: "工程能力"
 tags: ["desktop", "feedback", "type/usage-guide"]
 summary: "反馈控件的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 反馈控件
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | Qt；控件归父窗口所有 |
+| 核心入口 | `ConfirmDialog` / `EmptyState` / `BusyOverlay` / `Toast` |
+| 调用顺序 | 确认操作 → 显示忙碌 → 工作结果 → 隐藏忙碌并反馈 |
+| 关键边界 | Toast 时长非负整数；busy 只是显示，不运行或取消任务 |
+| 方法 / 属性 | `ask`, `show_message` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["确认操作"]
+    N1["显示忙碌"]
+    N0 --> N1
+    N2["工作结果"]
+    N1 --> N2
+    N3["隐藏忙碌并反馈"]
+    N2 --> N3
+```
+
 
 ## 适用场景
 

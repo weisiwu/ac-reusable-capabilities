@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["desktop", "async", "type/api-contract"]
 summary: "后台任务提交、取消、超时与资源释放的公开契约。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,28 @@ required_extra: qt
 # desktop.background
 
 导入路径：`ctf_desktop.background`。场景接入见 [使用指南](../guides/background.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `BackgroundTaskRunner` | `BackgroundTaskRunner(parent=None)` |
+| `BackgroundTaskRunner.submit` | `submit(operation: Callable[[Event], Any], *, timeout_ms: int \| None=None) -> int` |
+| `BackgroundTaskRunner.cancel` | `cancel() -> None` |
+| `BackgroundTaskRunner.close` | `close(*, wait: bool=True) -> None` |
+
+## Qt 信号
+
+这些信号在 Qt 线程连接和处理；信号参数中的 `object` 具体含义见使用指南。
+
+| 信号 | 参数类型 |
+| --- | --- |
+| `BackgroundTaskRunner.succeeded` | `(int, object)` |
+| `BackgroundTaskRunner.failed` | `(int, object)` |
+| `BackgroundTaskRunner.cancelled` | `(int)` |
+| `BackgroundTaskRunner.timed_out` | `(int)` |
 
 ## BackgroundTaskRunner
 

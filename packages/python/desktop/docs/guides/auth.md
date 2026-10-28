@@ -4,13 +4,39 @@ category: "工程能力"
 tags: ["desktop", "auth", "type/usage-guide"]
 summary: "密码与访问控制的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 密码与访问控制
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 标准库；Python >= 3.11 |
+| 核心入口 | `PasswordHasher` → `AuthService` → `AccessPolicy.require` |
+| 调用顺序 | 查账号 → 验证哈希 → 返回 Principal → 服务入口授权 |
+| 关键边界 | 认证失败返回 `None`；拒绝权限抛 `PermissionError`；不包含会话、限流或注册 |
+| 方法 / 属性 | `hash`, `verify`, `authenticate`, `require` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["查账号"]
+    N1["验证哈希"]
+    N0 --> N1
+    N2["返回 Principal"]
+    N1 --> N2
+    N3["服务入口授权"]
+    N2 --> N3
+```
+
 
 ## 适用场景
 

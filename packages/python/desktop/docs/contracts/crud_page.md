@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "crud_page"]
 summary: "crud_page 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,28 @@ required_extra: qt
 # desktop.crud_page
 
 导入路径：`ctf_desktop.crud_page`。场景接入见 [使用指南](../guides/crud_page.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `CrudPage` | `CrudPage(controller: CrudController, *, identity_key: str, columns: Sequence[Column], fields: Sequence[FieldSpec], filters: Sequence[FilterField]=(), parent=None)` |
+| `CrudPage.load_page` | `load_page(request: PageRequest \| None=None) -> None` |
+| `CrudPage.create_record` | `create_record() -> None` |
+| `CrudPage.edit_selected` | `edit_selected() -> None` |
+| `CrudPage.show_detail` | `show_detail() -> None` |
+| `CrudPage.delete_selected` | `delete_selected() -> None` |
+
+## Qt 信号
+
+这些信号在 Qt 线程连接和处理；信号参数中的 `object` 具体含义见使用指南。
+
+| 信号 | 参数类型 |
+| --- | --- |
+| `CrudPage.changed` | `(str, object)` |
+| `CrudPage.operation_failed` | `(str, object)` |
 
 ## CrudPage
 

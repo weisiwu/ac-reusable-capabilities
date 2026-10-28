@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,7 +23,13 @@ class PagesTests(unittest.TestCase):
             packages = json.loads((ROOT / 'catalog.json').read_text())['packages']
             self.assertEqual(len(data['capabilities']), sum(len(p['capabilities']) for p in packages))
             self.assertEqual(len(data['demos']), len(json.loads((ROOT / 'demo/catalog.json').read_text())['demos']))
-            self.assertIn(f'/blob/{revision}/', data['wiki'])
+            self.assertIn(f'/blob/{revision}/', data['sourceWiki'])
+            self.assertEqual(data['wiki'], 'wiki/Home.html')
+            for relative in [data['wiki'], data['docs'], 'assets/docs.css', 'assets/docs.js', 'assets/mermaid.min.js', 'doc-index.js']:
+                self.assertTrue((output / relative).is_file(), relative)
+            for capability in data['capabilities']:
+                self.assertTrue((output / unquote(capability['guide'])).is_file())
+                self.assertTrue((output / unquote(capability['contract'])).is_file())
             for relative in ['index.html', 'assets/app.mjs', 'assets/models.mjs', 'assets/style.css', '.nojekyll']:
                 self.assertTrue((output / relative).is_file(), relative)
             self.assertNotIn(str(ROOT), raw)
@@ -46,6 +53,7 @@ class PagesTests(unittest.TestCase):
             fixture = Path(directory).resolve() / 'repository'
             fixture.mkdir()
             shutil.copytree(ROOT / 'site', fixture / 'site')
+            (fixture / 'site/README.md').write_text('fixture only')
             # Temporary fixtures demonstrate presentation compatibility, not shipped packages.
             (fixture / 'site/demos.json').write_text(json.dumps({'schema_version':1,'scenes':[]}))
             for path in ['docs/README.md','wiki/Home.md','demo/README.md','origins.md',

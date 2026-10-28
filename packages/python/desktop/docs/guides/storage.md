@@ -4,13 +4,43 @@ category: "工程能力"
 tags: ["desktop", "storage", "type/usage-guide"]
 summary: "SQLite 迁移备份恢复的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # SQLite 迁移备份恢复
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 标准库 sqlite3；连接限同线程；明文库 |
+| 核心入口 | `Migration` / `SqliteStore` |
+| 调用顺序 | 创建连接 → migrate → 显式提交 → backup → 业务核验 → close |
+| 关键边界 | 失败回滚；恢复前停写与关闭外部连接；不提供业务降级或加密 |
+| 方法 / 属性 | `connect`, `migrate`, `backup`, `restore`, `close` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["创建连接"]
+    N1["migrate"]
+    N0 --> N1
+    N2["显式提交"]
+    N1 --> N2
+    N3["backup"]
+    N2 --> N3
+    N4["业务核验"]
+    N3 --> N4
+    N5["close"]
+    N4 --> N5
+```
+
 
 ## 适用场景
 

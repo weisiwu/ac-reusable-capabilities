@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "crud"]
 summary: "crud 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -13,6 +13,24 @@ article_status: published
 # desktop.crud
 
 导入路径：`ctf_desktop.crud`。场景接入见 [使用指南](../guides/crud.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `CrudRepository.list_page` | `list_page(request: PageRequest, filters: Mapping[str, Any]) -> PageResult` |
+| `CrudRepository.get` | `get(identity: Any) -> Mapping[str, Any] \| None` |
+| `CrudRepository.create` | `create(values: Mapping[str, Any]) -> Any` |
+| `CrudRepository.update` | `update(identity: Any, values: Mapping[str, Any]) -> None` |
+| `CrudRepository.delete` | `delete(identity: Any) -> None` |
+| `CrudController` | `CrudController(repository: CrudRepository, *, authorize: Callable[[str, Any], None], validate: Callable[[Mapping[str, Any]], None] \| None=None, changed: Callable[[str, Any], None] \| None=None)` |
+| `CrudController.list_page` | `list_page(request: PageRequest, filters: Mapping[str, Any] \| None=None) -> PageResult` |
+| `CrudController.detail` | `detail(identity: Any) -> Mapping[str, Any] \| None` |
+| `CrudController.create` | `create(values: Mapping[str, Any]) -> Any` |
+| `CrudController.update` | `update(identity: Any, values: Mapping[str, Any]) -> None` |
+| `CrudController.delete` | `delete(identity: Any) -> None` |
 
 ## CrudRepository
 

@@ -4,13 +4,15 @@ category: "工程能力"
 tags: ["desktop", "type/handbook"]
 summary: "从场景指南到接口契约、失败示例和验证记录。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 桌面能力文档导航
+
+当前接口基线为 `common-tech-framework-desktop 0.2.0`，导入名为 `ctf_desktop`。包版本与文档提交分别记录；安装要求与真实验证范围见 [架构与依赖](架构与依赖.md) 和 [升级与兼容](升级与兼容.md)。
 
 ## 阅读顺序
 
@@ -21,6 +23,8 @@ article_status: published
 5. 升级前读 [兼容说明](升级与兼容.md)，定位失败时读 [排障](常见问题与排障.md)。
 
 ## 模块指南
+
+使用指南提供场景、调用流程和资源管理；公开契约提供属性、方法、信号、默认值、异常与最小调用。按模块进入，避免只凭在线演示推断接口行为。
 
 | 模块 | 场景与接入 | 输入输出及异常 |
 | --- | --- | --- |
