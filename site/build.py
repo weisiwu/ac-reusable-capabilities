@@ -76,7 +76,8 @@ def _build(output, repository, revision):
     scenes = json.loads(scenes_path.read_text(encoding='utf-8'))['scenes'] if scenes_path.is_file() else []
     renderers = set()
     for scene in scenes:
-        if scene['renderer'] not in ('table', 'form', 'search', 'redact') or scene['renderer'] in renderers:
+        if scene['renderer'] not in ('table', 'form', 'filters', 'feedback', 'navigation', 'auth', 'crud', 'query',
+                                     'printing', 'transport', 'services', 'storage', 'runtime', 'redact', 'search') or scene['renderer'] in renderers:
             raise ValueError('unknown or duplicate browser renderer')
         if scene['capability_id'] not in capability_ids or (scene.get('demo_id') and scene['demo_id'] not in demo_ids):
             raise ValueError('browser scene references unknown capability or demo')
@@ -105,7 +106,8 @@ def _build(output, repository, revision):
     for demo, original in zip(demos, demo_catalog['demos']):
         demo['guide'] = reading_link(original['guide'])
     shutil.copyfile(ROOT / 'site/index.html', output / 'index.html')
-    for name in ('style.css', 'app.mjs', 'models.mjs', 'favicon.svg'):
+    for name in ('style.css', 'app.mjs', 'models.mjs', 'favicon.svg', 'mock-data.mjs', 'demo-kit.mjs',
+                 'scene-registry.mjs', 'scenes-ui.mjs', 'scenes-system.mjs'):
         shutil.copyfile(ROOT / 'site/assets' / name, output / 'assets' / name)
     payload = json.dumps(data, ensure_ascii=False).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
     (output / 'data.js').write_text('window.AC_DATA = ' + payload + ';\n', encoding='utf-8')
