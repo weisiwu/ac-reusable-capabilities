@@ -38,6 +38,28 @@ if (navigationToggle && navigationPanel) {
   });
   syncNavigation();
 }
+const navigationGroups = [...document.querySelectorAll('#docs-navigation-panel nav > details.sidebar-group')];
+for (const group of navigationGroups) {
+  const closeOtherGroups = () => {
+    for (const other of navigationGroups) {
+      if (other !== group) other.open = false;
+    }
+  };
+  // Close siblings before the native action, including on browsers without details[name].
+  group.querySelector('summary').addEventListener('click', () => {
+    if (!group.open) closeOtherGroups();
+  });
+  group.addEventListener('toggle', () => {
+    if (group.open) closeOtherGroups();
+  });
+}
+window.addEventListener('pageshow', event => {
+  if (!event.persisted) return;
+  const activeGroup = navigationPanel?.querySelector('nav a[aria-current="page"]')?.closest('details.sidebar-group');
+  if (activeGroup) {
+    for (const group of navigationGroups) group.open = group === activeGroup;
+  }
+});
 search.addEventListener('input', () => {
   const query = search.value.trim().toLocaleLowerCase();
   results.replaceChildren();

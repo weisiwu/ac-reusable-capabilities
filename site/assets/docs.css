@@ -75,8 +75,43 @@ button, a, summary { -webkit-tap-highlight-color: #dce6ff; }
 .docs-sidebar { padding: 24px 16px 48px; border-right: 1px solid var(--line); background: var(--surface); position: sticky; top: var(--header-height); height: calc(100dvh - var(--header-height)); overflow-y: auto; min-width: 0; }
 .docs-sidebar label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 650; color: var(--muted); }
 .docs-sidebar input { width: 100%; font-size: 13px; }
-.docs-sidebar details { margin: 24px 0 0; }
-.docs-sidebar summary { cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 650; margin: 0 8px 8px; }
+/* One accordion vocabulary for demo and documentation sidebars. */
+.docs-sidebar nav, #demo-navigation { display: grid; gap: 4px; }
+.docs-sidebar nav { margin-top: 24px; }
+.docs-sidebar .sidebar-group, #demo-navigation .sidebar-group { margin: 0; min-width: 0; }
+.docs-sidebar .sidebar-group-title, #demo-navigation .sidebar-group-title {
+  display: list-item;
+  list-style-position: inside;
+  min-height: 36px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.sidebar-group-title::marker { color: var(--muted); font-size: 10px; }
+.docs-sidebar .sidebar-group-title:hover, #demo-navigation .sidebar-group-title:hover { color: var(--accent); background: #e9eef8; }
+.sidebar-group-items { margin: 4px 0 8px; padding-left: 12px; }
+.docs-sidebar .sidebar-group-items > a, #demo-navigation .sidebar-group-items > a {
+  display: block;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.docs-sidebar .sidebar-group-items > a:hover, #demo-navigation .sidebar-group-items > a:hover { background: #e9eef8; color: var(--accent); }
+.docs-sidebar .sidebar-group-items > a[aria-current], #demo-navigation .sidebar-group-items > a[aria-current] {
+  color: var(--accent);
+  background: #e5edff;
+  font-weight: 600;
+}
 .docs-sidebar nav a, #search-results a { display: block; border-radius: var(--control-radius); padding: 6px 8px; font-size: 13px; color: var(--ink); line-height: 1.6; text-decoration: none; overflow-wrap: anywhere; }
 .docs-sidebar nav a:hover, #search-results a:hover { background: #e9eef8; }
 .docs-sidebar a[aria-current] { color: #1c46a7; background: #e5edff; font-weight: 650; }
@@ -131,7 +166,6 @@ footer a { margin-left: 12px; }
 @media (max-width: 900px) {
   .docs-layout { display: block; }
   .docs-sidebar { position: static; height: auto; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); padding: 24px; overflow: visible; }
-  .docs-sidebar details { margin-top: 20px; }
   .doc-content { margin: 0 auto; padding: 32px; }
   .docs-navigation-ready .docs-mobile-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--paper); }
   .docs-nav-toggle { display: inline-flex; align-items: center; gap: 32px; padding: 6px 12px; font-size: 13px; }

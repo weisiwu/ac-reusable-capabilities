@@ -240,11 +240,14 @@ def build_docs(root, output, packages, repository, revision):
         section = categories.get(source, '文档中心')
         package = next((item for item in packages if source.startswith(item['path'] + '/')), None)
         nav = []
+        active_group = categories.get(source, groups[0][0] if groups else None)
         for label, items in groups:
             links = ''.join(f'<a href="{relative_url(document_path(item), page)}"' + (' aria-current="page"' if item == source else '')
                             + f'>{escape(documents[item][0])}</a>' for item in items)
-            opened = ' open' if source in items or label == '快速开始' else ''
-            nav.append(f'<details{opened}><summary>{label}</summary>{links}</details>')
+            opened = ' open' if label == active_group else ''
+            nav.append(f'<details class="sidebar-group" name="docs-navigation-groups"{opened}>'
+                       f'<summary class="sidebar-group-title">{escape(label)}</summary>'
+                       f'<div class="sidebar-group-items">{links}</div></details>')
         version = ''
         if package:
             version = f'<span>{escape(package["id"])} · {escape(package["version"])}</span>'

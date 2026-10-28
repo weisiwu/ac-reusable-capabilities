@@ -333,9 +333,9 @@
       "name": "Sidebar Navigation",
       "kind": "nav",
       "refersTo": "sidebar-navigation",
-      "description": "Compact current-location treatment in the showcase navigation.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"能力分组\"><a href=\"#catalog\" aria-current=\"page\">全部能力</a><a href=\"#group/ui\">界面与交互</a></nav>",
-      "css": ".ds-nav{font-family:var(--font-sans,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif);display:grid;gap:4px;background:var(--surface,#f5f7fb);padding:16px;max-width:232px}.ds-nav a{display:flex;align-items:center;min-height:36px;padding:6px 10px;border-radius:5px;font-size:13px;line-height:1.6;color:var(--ink,#202939);text-decoration:none}.ds-nav a:hover{background:#eaf0f8;color:var(--accent,#2457d6)}.ds-nav a[aria-current]{color:var(--accent,#2457d6);background:#e7eefc;font-weight:600}.ds-nav a:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px;}"
+      "description": "Shared single-open accordion for demo and documentation navigation, with the current page group initially open.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"能力导航\"><details name=\"ds-sidebar-groups\" open><summary>界面与输入</summary><div><a href=\"#demo/table\" aria-current=\"page\">数据表格</a><a href=\"#demo/form\">表单与详情</a></div></details><details name=\"ds-sidebar-groups\"><summary>数据与任务</summary><div><a href=\"#demo/query\">条件查询</a></div></details></nav>",
+      "css": ".ds-nav{font:13px/1.6 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:grid;gap:4px;background:var(--surface,#f5f7fb);padding:16px;max-width:232px}.ds-nav summary{list-style-position:inside;min-height:36px;padding:6px 10px;border-radius:5px;font-weight:600;cursor:pointer}.ds-nav details>div{margin:4px 0 8px;padding-left:12px}.ds-nav a{display:block;min-height:36px;padding:6px 10px;border-radius:5px;color:var(--ink,#202939);text-decoration:none}.ds-nav summary:hover,.ds-nav a:hover{background:#e9eef8;color:var(--accent,#2457d6)}.ds-nav a[aria-current]{color:var(--accent,#2457d6);background:#e5edff;font-weight:600}.ds-nav a:focus-visible,.ds-nav summary:focus-visible{outline:2px solid var(--accent,#2457d6);outline-offset:3px}"
     },
     {
       "name": "State Badge",
