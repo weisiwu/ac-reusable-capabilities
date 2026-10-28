@@ -5,25 +5,121 @@
       "renderer": "table",
       "capability_id": "desktop.table",
       "demo_id": "desktop-ui",
-      "title": "数据表格"
+      "title": "数据表格",
+      "group": "界面与输入",
+      "summary": "24 条任务资料已就绪，可筛选、翻页和查看详情。"
     },
     {
       "renderer": "form",
       "capability_id": "desktop.forms",
       "demo_id": "desktop-ui",
-      "title": "配置表单"
+      "title": "表单与详情",
+      "group": "界面与输入",
+      "summary": "预填样例资料，修改后立即看到预览和校验结果。"
+    },
+    {
+      "renderer": "filters",
+      "capability_id": "desktop.filters",
+      "demo_id": "desktop-ui",
+      "title": "筛选与联想",
+      "group": "界面与输入",
+      "summary": "组合条件和联想候选，直接查看筛选后的记录。"
+    },
+    {
+      "renderer": "feedback",
+      "capability_id": "desktop.feedback",
+      "demo_id": "desktop-ui",
+      "title": "操作反馈",
+      "group": "界面与输入",
+      "summary": "体验成功、失败、加载与确认操作的反馈。"
+    },
+    {
+      "renderer": "navigation",
+      "capability_id": "desktop.navigation",
+      "demo_id": "desktop-ui",
+      "title": "页面导航",
+      "group": "界面与输入",
+      "summary": "在概览、任务和历史记录间切换。"
+    },
+    {
+      "renderer": "crud",
+      "capability_id": "desktop.crud",
+      "demo_id": "desktop-ui",
+      "title": "资料管理",
+      "group": "界面与输入",
+      "summary": "从现有资料开始新增、修改和删除。"
+    },
+    {
+      "renderer": "query",
+      "capability_id": "desktop.query",
+      "demo_id": "desktop-core",
+      "title": "条件查询",
+      "group": "数据与任务",
+      "summary": "修改预填条件，查看匹配的记录与分页。"
     },
     {
       "renderer": "search",
       "capability_id": "desktop.background",
       "demo_id": "desktop-search",
-      "title": "异步搜索"
+      "title": "后台搜索",
+      "group": "数据与任务",
+      "summary": "已提供样例搜索结果，体验最新查询、取消和超时。"
+    },
+    {
+      "renderer": "storage",
+      "capability_id": "desktop.storage",
+      "demo_id": "desktop-failures",
+      "title": "备份与恢复",
+      "group": "数据与任务",
+      "summary": "从已有快照恢复记录，体验备份和模拟升级。"
+    },
+    {
+      "renderer": "printing",
+      "capability_id": "desktop.printing",
+      "demo_id": "desktop-failures",
+      "title": "批量打印",
+      "group": "服务与设备",
+      "summary": "查看样例报告队列，开始或取消批量处理。"
+    },
+    {
+      "renderer": "auth",
+      "capability_id": "desktop.auth",
+      "demo_id": "desktop-failures",
+      "title": "权限与校验",
+      "group": "服务与设备",
+      "summary": "切换样例角色，对照查看允许与拒绝的操作。"
+    },
+    {
+      "renderer": "transport",
+      "capability_id": "desktop.transport",
+      "demo_id": "desktop-failures",
+      "title": "设备通信",
+      "group": "服务与设备",
+      "summary": "模拟设备已连接，收发记录和操作结果直接可见。"
+    },
+    {
+      "renderer": "services",
+      "capability_id": "desktop.services",
+      "demo_id": "desktop-failures",
+      "title": "服务管理",
+      "group": "服务与设备",
+      "summary": "查看服务运行状态，体验启动、停止和失败回滚。"
+    },
+    {
+      "renderer": "runtime",
+      "capability_id": "desktop.runtime",
+      "demo_id": "desktop-failures",
+      "title": "配置与单实例",
+      "group": "服务与设备",
+      "summary": "样例配置已通过检查，可修改并模拟重复启动。"
     },
     {
       "renderer": "redact",
       "capability_id": "desktop.diagnostics",
       "demo_id": "desktop-failures",
-      "title": "结构化脱敏"
+      "title": "日志与脱敏",
+      "group": "服务与设备",
+      "summary": "输入与脱敏结果已同时展示，查看结构化日志。"
     }
   ]
 }

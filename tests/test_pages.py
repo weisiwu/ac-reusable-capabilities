@@ -33,6 +33,14 @@ class PagesTests(unittest.TestCase):
                 self.assertTrue((output / unquote(capability['contract'])).is_file())
             for relative in ['index.html', 'assets/app.mjs', 'assets/models.mjs', 'assets/style.css', '.nojekyll']:
                 self.assertTrue((output / relative).is_file(), relative)
+            for relative in ['assets/mock-data.mjs', 'assets/demo-kit.mjs', 'assets/scene-registry.mjs',
+                             'assets/scenes-ui.mjs', 'assets/scenes-system.mjs']:
+                self.assertTrue((output / relative).is_file(), relative)
+            desktop = {item['id'] for item in data['capabilities'] if item['package'] == 'python.desktop'}
+            self.assertTrue(desktop.issubset({item['capability_id'] for item in data['browserDemos']}))
+            home_source = (output / 'index.html').read_text()
+            self.assertIn('class="docs-header"', home_source)
+            self.assertLess(home_source.index('./assets/docs.css'), home_source.index('./assets/style.css'))
             self.assertNotIn(str(ROOT), raw)
             self.assertNotIn('/assets/', (output / 'index.html').read_text().replace('./assets/', ''))
             redirects = {'Home': 'README', 'Getting-Started': '快速开始', 'Capabilities': '能力地图',

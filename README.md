@@ -18,7 +18,7 @@ article_status: published
 
 [功能展示与 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [文档中心](https://weisiwu.github.io/ac-reusable-capabilities/docs/README.html)
 
-展示页负责功能效果和交互；文档中心统一提供快速开始、能力选择、组合场景、版本、依赖、兼容性及包内使用指南和接口契约。文档网页随 Pages 从同一提交构建，是否已更新以部署记录与文档的源码提交为准。
+展示页与文档中心共用页面骨架和样式。当前 15 项能力分别提供带完整初始样例与结果的浏览器 mock，可直接操作、重置或切换；设备、数据库、权限与系统行为均为页面内模拟，不持久化。文档中心统一提供快速开始、能力选择、组合场景、版本、依赖、兼容性及包内使用指南和接口契约；真实 Python 契约独立验证。文档网页随 Pages 从同一提交构建，是否已更新以部署记录与文档的源码提交为准。
 
 仓库内阅读：[本地 Demo](demo/README.md) · [文档中心源文档](docs/README.md)
 
@@ -29,7 +29,7 @@ python demo/run.py --list
 python demo/run.py desktop-core
 ```
 
-交互展示、后台搜索和无显示器 smoke 的安装与命令见 [Demo 运行入口](demo/README.md)。
+交互展示、后台搜索和无显示器 smoke 的安装与命令见 [Demo 运行入口](demo/README.md)。各浏览器场景的初始样例、模拟边界和重置方式见 [站点说明](site/README.md#当前场景与边界)；新包也可只提供文档或本地示例，不会自动生成在线演示。
 
 | 能力包 | 内容 | 入口 |
 | --- | --- | --- |
