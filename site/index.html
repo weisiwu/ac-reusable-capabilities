@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="AC 能力库功能展示：使用样例数据体验表格、表单、查询、权限、数据管理等可复用能力。">
+<meta name="description" content="浏览 AC 能力目录，使用已有样例体验表格、表单、查询、权限和数据管理，再通过统一文档中心了解接入。">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
-<title>功能展示 · AC 能力库</title>
+<title>能力目录 · AC 能力库</title>
 <link rel="stylesheet" href="./assets/docs.css">
 <link rel="stylesheet" href="./assets/style.css">
 <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
@@ -13,57 +13,58 @@
 <a class="skip" href="#main">跳到正文</a>
 <header class="docs-header">
   <a class="docs-brand" href="./index.html">AC Lab</a>
-  <nav aria-label="站点导航"><a href="./index.html" aria-current="page">功能展示</a><a href="./docs/README.html" data-link="docs">文档中心</a></nav>
-  <a class="source-link" data-link="repository" href="https://github.com/weisiwu/ac-reusable-capabilities">GitHub ↗</a>
+  <nav aria-label="站点导航"><a href="#catalog" aria-current="page">功能展示</a><a href="./docs/README.html" data-link="docs">文档中心</a></nav>
+  <a class="source-link" data-link="repository" href="https://github.com/weisiwu/ac-reusable-capabilities">GitHub</a>
 </header>
-<div class="docs-layout">
-  <aside class="docs-sidebar">
-    <label for="capability-query">搜索能力</label>
-    <input id="capability-query" type="search" placeholder="功能、场景或关键词" autocomplete="off">
-    <nav id="demo-navigation" aria-label="功能演示目录"></nav>
+<div class="app-layout">
+  <aside class="app-sidebar">
+    <button id="app-menu-toggle" type="button" aria-expanded="false" aria-controls="app-sidebar-content">能力导航</button>
+    <div id="app-sidebar-content" class="sidebar-content">
+      <a class="sidebar-home" href="#catalog">能力目录</a>
+      <nav id="catalog-navigation" aria-label="能力分组"></nav>
+      <nav id="demo-navigation" aria-label="功能演示目录" hidden></nav>
+      <div class="sidebar-links">
+        <a href="#recipes">组合场景</a>
+        <a href="./docs/README.html" data-link="docs">使用文档</a>
+        <a href="./docs/版本与兼容.html">版本与兼容</a>
+        <span id="package-version"></span>
+      </div>
+    </div>
   </aside>
-  <main id="main" class="doc-content">
-    <h1>功能展示</h1>
-    <p class="showcase-lead">各项能力均已准备样例和结果，设备与系统行为为模拟。</p>
-    <section id="lab" class="scene-section" aria-labelledby="scene-title">
-      <div class="scene-heading"><h2 id="scene-title">选择功能开始体验</h2><div class="scene-actions"><label class="scene-picker-label">体验功能<select id="scene-picker" aria-label="切换体验功能"></select></label><button id="reset-scene" type="button">重置样例</button><a id="context-guide" href="./docs/README.html">使用文档 →</a></div></div>
-      <p id="scene-summary" class="scene-summary">从左侧选择能力，或在下方能力总览中打开演示。</p>
+  <main id="main" class="app-main" tabindex="-1">
+    <section id="catalog-view" aria-labelledby="catalog-title">
+      <div class="catalog-heading"><h1 id="catalog-title" tabindex="-1">能力目录</h1><p>选择一项能力，直接体验功能与效果。</p><span id="catalog-meta" class="catalog-meta"></span></div>
+      <div class="catalog-tools">
+        <label class="catalog-search" for="capability-query"><span class="sr-only">搜索能力</span><input id="capability-query" type="search" placeholder="搜索能力、场景或关键词" autocomplete="off"></label>
+        <details id="catalog-refinements"><summary>更多筛选</summary><div class="catalog-filters">
+          <label>语言<select id="filter-language"><option value="">全部语言</option></select></label>
+          <label>领域<select id="filter-domain"><option value="">全部领域</option></select></label>
+          <label>类型<select id="filter-kind"><option value="">全部类型</option></select></label>
+          <label>体验<select id="filter-mode"><option value="">全部能力</option><option value="browser">在线体验</option><option value="local">本地体验</option><option value="documentation">查看文档</option></select></label>
+          <button id="clear-filters" type="button">清除筛选</button>
+        </div></details>
+      </div>
+      <p id="route-notice" class="mock-status warning" role="status" hidden></p>
+      <p id="capability-count" class="catalog-count" aria-live="polite"></p>
+      <div id="capability-list"></div>
+    </section>
+    <section id="experience-view" aria-labelledby="scene-title" hidden>
+      <div class="experience-heading">
+        <a id="back-catalog" class="back-link" href="#catalog">返回能力目录</a>
+        <div class="experience-title-row"><h1 id="scene-title" tabindex="-1"></h1><div class="experience-toolbar"><button id="reset-scene" type="button">重置样例</button><a id="context-guide" class="button-link primary" href="./docs/README.html">使用文档</a></div></div>
+        <p id="scene-summary" class="scene-summary"></p>
+      </div>
+      <p class="mock-boundary">虚构样例 · 设备与系统行为为模拟；切换或重置可恢复默认数据。</p>
       <div id="scene-content" class="scene-content"></div>
     </section>
-    <section id="overview" aria-labelledby="catalog-title">
-      <h2 id="catalog-title">能力总览</h2>
-      <p id="catalog-summary">按语言、领域或类型查找需要的功能。</p>
-      <div class="catalog-filters">
-        <label>语言<select id="filter-language"><option value="">全部语言</option></select></label>
-        <label>领域<select id="filter-domain"><option value="">全部领域</option></select></label>
-        <label>类型<select id="filter-kind"><option value="">全部类型</option></select></label>
-        <label>体验<select id="filter-mode"><option value="">全部能力</option><option value="browser">在线体验</option><option value="local">本地体验</option><option value="documentation">查看文档</option></select></label>
-        <button id="clear-filters" type="button">清除筛选</button>
-      </div>
-      <div id="capability-list" class="capability-grid"></div>
-      <div class="pagination"><span id="capability-count" aria-live="polite"></span><div><button id="catalog-previous" type="button" aria-label="能力上一页">‹</button><span id="catalog-page-number"></span><button id="catalog-next" type="button" aria-label="能力下一页">›</button></div></div>
-    </section>
-    <section id="examples" aria-labelledby="examples-title">
-      <h2 id="examples-title">组合场景</h2>
-      <p>了解多项能力如何配合。</p>
-      <label class="sr-only" for="demo-package">按能力包筛选场景</label>
-      <select id="demo-package"><option value="">全部场景</option></select>
+    <section id="recipes-view" aria-labelledby="recipes-title" hidden>
+      <div class="catalog-heading"><h1 id="recipes-title" tabindex="-1">组合场景</h1><p>从具体任务出发，了解多项能力如何配合。</p></div>
+      <label class="scenario-filter">能力包<select id="demo-package"><option value="">全部场景</option></select></label>
       <div id="demo-list" class="scenario-list"></div>
     </section>
-    <section id="docs" aria-labelledby="docs-title">
-      <h2 id="docs-title">文档中心</h2>
-      <p>查阅使用指南、流程、接口、版本、依赖和兼容要求。</p>
-      <a class="document-entry" data-link="docs" href="./docs/README.html">进入文档中心 →</a>
-    </section>
-    <footer>AC Lab · 可复用能力库<a href="#lab">返回功能体验</a></footer>
+    <footer>AC 能力库<span id="site-revision"></span><a data-link="docs" href="./docs/README.html">文档中心</a></footer>
   </main>
-  <aside class="doc-toc" aria-label="本页目录">
-    <span>本页目录</span>
-    <ul><li><a href="#lab">功能体验</a></li><li><a href="#overview">能力总览</a></li><li><a href="#examples">组合场景</a></li><li><a href="#docs">文档中心</a></li></ul>
-    <p class="mock-boundary">全部为虚构样例。设备与系统行为均为模拟，切换或重置后恢复默认数据。</p>
-  </aside>
 </div>
-<div id="announcement" class="toast" role="status" hidden></div>
 <noscript><p class="noscript">交互演示需要 JavaScript。<a href="./docs/README.html">阅读文档中心</a>。</p></noscript>
 <script src="./data.js"></script><script type="module" src="./assets/app.mjs"></script>
 </body>

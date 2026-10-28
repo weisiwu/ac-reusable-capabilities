@@ -254,11 +254,12 @@ def build_docs(root, output, packages, repository, revision):
 <meta name="description" content="{escape(title, quote=True)} · AC 能力库使用文档">
 <title>{escape(title)} · 文档中心</title><link rel="stylesheet" href="{prefix}assets/docs.css">
 <link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg"></head>
-<body><a class="skip" href="#content">跳到正文</a>
+<body class="docs-page"><a class="skip" href="#content">跳到正文</a>
 <header class="docs-header"><a class="docs-brand" href="{prefix}index.html">AC Lab</a><nav aria-label="站点导航">
 <a href="{prefix}index.html">功能展示</a><a href="{prefix}docs/README.html" aria-current="page">文档中心</a></nav>
 <a class="source-link" href="{base + quote(source, safe='/')}">查看源文档 ↗</a></header>
-<div class="docs-layout"><aside class="docs-sidebar"><label for="doc-search">搜索文档</label>
+<div class="docs-mobile-toolbar"><button id="docs-nav-toggle" class="docs-nav-toggle" type="button" aria-expanded="false" aria-controls="docs-navigation-panel">文档目录<span data-docs-nav-label>展开</span></button><span class="docs-mobile-current">{escape(section)}</span></div>
+<div class="docs-layout"><aside id="docs-navigation-panel" class="docs-sidebar"><label for="doc-search">搜索文档</label>
 <input type="search" id="doc-search" placeholder="能力、参数或兼容要求" autocomplete="off"><div id="search-results" aria-live="polite"></div>
 <nav aria-label="文档目录">{''.join(nav)}</nav></aside>
 <main id="content" class="doc-content"><div class="document-meta"><span>{section}</span>{version}<span>提交 {escape(revision[:7])}</span></div>
