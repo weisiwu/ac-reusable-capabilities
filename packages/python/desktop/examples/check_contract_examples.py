@@ -1,4 +1,4 @@
-"""Execute each documented Python example; use --qt for GUI contracts too."""
+"""Execute the guide and contract examples; use --qt for Qt-dependent pages too."""
 import os
 import re
 import sys
@@ -11,7 +11,9 @@ if '--qt' in sys.argv:
     app = QApplication.instance() or QApplication([])
 count = 0
 try:
-    for path in sorted((Path(__file__).resolve().parents[1]/'docs/contracts').glob('*.md')):
+    docs = Path(__file__).resolve().parents[1] / 'docs'
+    pages = sorted(path for kind in ('guides', 'contracts') for path in (docs / kind).glob('*.md'))
+    for path in pages:
         source = path.read_text()
         if re.search(r'^required_extra:\s*qt\s*$', source.split('---', 2)[1], re.M) and app is None:
             continue
