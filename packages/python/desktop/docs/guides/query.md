@@ -156,7 +156,7 @@ flowchart LR
 | --- | --- | --- | --- |
 | `items` | `tuple[Any, ...]` | 必填 | 当前页结果 tuple；对应 request 和 total。 |
 | `total` | `int` | 必填 | 总数；PageResult 的 total 是匹配记录数，打印结果 total 是计划提交份数。 |
-| `request` | `PageRequest` | 必填 | 分页请求；CrudPage 的 None 表示沿用当前请求。 |
+| `request` | `PageRequest` | 必填 | 与当前页 items 和 total 对应的 PageRequest，必须显式提供。 |
 
 冻结值对象禁止直接重新赋值字段；含映射或其他对象时，不代表内部对象被深度冻结。
 
@@ -215,7 +215,7 @@ flowchart LR
 | 触发情况 | 错误或结果 | 调用方处理 |
 | --- | --- | --- |
 | 非法页号、页大小或 total | ValueError | 拒绝 bool/非整数及非法范围。 |
-| 未知筛选字段 | ValueError | 维护可信字段白名单。 |
+| 未知筛选字段 | ValueError | equal/contains 实际添加条件时检查；range 始终检查，包括双边界均为空。 |
 | items、total 与页码业务不一致 | 不自动修正 | 仓储使用一致查询条件计算结果。 |
 
 ### 失败与边界

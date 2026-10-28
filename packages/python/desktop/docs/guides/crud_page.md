@@ -155,7 +155,7 @@ flowchart LR
 | `identity_key` | `str` | 必填 | 仅关键字 | 记录中的主键字段名；选中记录缺此字段通过 operation_failed 报告。 |
 | `columns` | `Sequence[Column]` | 必填 | 仅关键字 | 用于列表显示的 Column 序列。 |
 | `fields` | `Sequence[FieldSpec]` | 必填 | 仅关键字 | FieldSpec 配置序列；键应唯一且非空。 |
-| `filters` | `Sequence[FilterField]` | `()` | 仅关键字 | 筛选映射或筛选字段序列，按本接口声明类型传入；控制器的 None 筛选按空映射处理。 |
+| `filters` | `Sequence[FilterField]` | `()` | 仅关键字 | FilterField 配置序列；默认空 tuple，不创建筛选字段。 |
 | `parent` | 未标注 | `None` | 仅关键字 | Qt 父对象，默认 None；子控件/对象的所有权遵循 Qt 父子关系。 |
 
 ### CrudPage.load_page 输入参数

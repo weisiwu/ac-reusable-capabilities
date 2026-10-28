@@ -293,7 +293,7 @@ flowchart LR
 
 稳定标识：`desktop.auth.PasswordHasher.needs_rehash`
 
-载荷损坏、不支持或轮数低于当前配置时返回 True；只判断，不会重写账户数据。
+载荷损坏、不支持、超出验证策略或轮数低于当前配置时返回 True；只判断，不会重写账户数据。
 
 ## AuthService
 
