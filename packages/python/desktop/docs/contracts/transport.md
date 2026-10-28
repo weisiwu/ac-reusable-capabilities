@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "transport"]
 summary: "transport 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -13,6 +13,33 @@ article_status: published
 # desktop.transport
 
 导入路径：`ctf_desktop.transport`。场景接入见 [使用指南](../guides/transport.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `Transport.open` | `open() -> None` |
+| `Transport.close` | `close() -> None` |
+| `Transport.write` | `write(payload: bytes) -> None` |
+| `Transport.read` | `read(size: int) -> bytes` |
+| `SerialConfig` | `SerialConfig(port: str, baudrate: int = 9600, timeout: float = 1.0, write_timeout: float = 1.0)` |
+| `SerialTransport` | `SerialTransport(config: SerialConfig, factory: Callable \| None=None)` |
+| `SerialTransport.open` | `open() -> None` |
+| `SerialTransport.close` | `close() -> None` |
+| `SerialTransport.write` | `write(payload: bytes) -> None` |
+| `SerialTransport.read` | `read(size: int) -> bytes` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `SerialConfig.port` | `str` | 必填 |
+| `SerialConfig.baudrate` | `int` | `9600` |
+| `SerialConfig.timeout` | `float` | `1.0` |
+| `SerialConfig.write_timeout` | `float` | `1.0` |
+| `SerialTransport.is_open` | `bool` | 只读计算属性 |
 
 ## Transport
 
@@ -91,6 +118,14 @@ Require nonnegative integer size (bool rejected); serialize IO and return bytes;
 稳定标识：`desktop.transport.SerialTransport.is_open`
 
 Return owned handle open status under lock; false when no handle is owned.
+
+## 上下文管理
+
+| 用法 | 进入 `with` | 离开 `with` |
+| --- | --- | --- |
+| `with SerialTransport(...) as resource` | 打开串口并返回自身 | 关闭拥有的串口句柄；正常或异常退出都执行，异常不被吞掉 |
+
+清理本身也可能失败；应用应记录并处理未释放资源，不应把进入 `with` 视为业务操作已成功。
 
 ## 最小调用示例
 

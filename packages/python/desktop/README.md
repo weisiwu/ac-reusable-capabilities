@@ -1,6 +1,6 @@
 # Desktop 可复用基础能力包
 
-[仓库 Demo](../../../demo/README.md) · [Wiki](../../../wiki/Home.md) · [文档中心](../../../docs/README.md)
+[仓库 Demo](../../../demo/README.md) · [文档中心](../../../docs/README.md)
 
 安装保留 `ctf_desktop` 导入路径。本目录是独立可安装包，仓库根目录不作为 Python 包安装。无界面模块只依赖标准库；Qt 和 pyserial 按需安装。
 

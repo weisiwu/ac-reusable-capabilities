@@ -2,37 +2,31 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="AC 可复用能力目录：体验表格、表单、异步搜索与结构化脱敏，查找 Python 桌面能力的文档和本地示例。">
+<meta name="description" content="AC Lab 能力展示：直接体验数据表格、配置表单、异步搜索和结构化脱敏，发现可以带入项目的功能。">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
-<title>AC Lab · 可复用能力目录</title>
+<title>AC Lab · 能力展示</title>
 <link rel="stylesheet" href="./assets/style.css">
+<link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
 </head>
 <body>
 <a class="skip" href="#main">跳到内容</a>
 <aside class="sidebar">
-  <a class="brand" href="#overview"><span class="mark">AC</span> AC Lab</a>
+  <a class="brand" href="#lab"><span class="mark">AC</span> AC Lab</a>
   <nav aria-label="主导航">
-    <a class="active" href="#overview" data-nav="overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v11h-7v-7h-4v7H3Z"/></svg>能力总览</a>
-    <a href="#lab" data-nav="lab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v7L4 21h16l-6-11V3M8 15h8"/></svg>交互实验室</a>
-    <a href="#examples" data-nav="examples"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4Z"/></svg>运行示例</a>
-    <a href="#docs" data-nav="docs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16M3 4h5l4 2 4-2h5v15h-5l-4 2-4-2H3Z"/></svg>文档与 Wiki</a>
+    <a class="active" href="#lab" data-nav="lab"><span aria-hidden="true">◉</span>功能体验</a>
+    <a href="#overview" data-nav="overview"><span aria-hidden="true">▦</span>能力总览</a>
+    <a href="#examples" data-nav="examples"><span aria-hidden="true">▤</span>组合场景</a>
+    <a href="#docs" data-nav="docs"><span aria-hidden="true">▧</span>文档中心</a>
   </nav>
-  <div class="sidebar-note">机制留在能力库<br>业务规则由应用注入</div>
+  <div class="sidebar-note">发现功能<br>体验效果<br>带入项目</div>
 </aside>
 <div class="workspace">
-<header class="topbar"><span>ac-reusable-capabilities <span class="separator">/</span> <strong>Demo</strong></span><a data-link="repository" class="repo-link">GitHub ↗</a></header>
+<header class="topbar"><a class="topbar-home" href="#lab">可复用能力库 <span class="separator">/</span> <strong>能力展示</strong></a><div class="topbar-links"><a data-link="docs">文档中心</a><a data-link="repository" class="repo-link">GitHub ↗</a></div></header>
 <main id="main">
-  <section class="intro"><h1>跨项目沉淀，按能力复用</h1><p>按语言、领域与能力类型查找，选择适合项目的接入方式。</p></section>
-  <section class="panel catalog" id="overview" aria-labelledby="catalog-title">
-    <div class="section-heading"><div><h2 id="catalog-title">能力目录</h2><p id="catalog-summary">从统一契约、示例和来源中选择可复用能力。</p></div><label class="sr-only" for="capability-query">搜索能力</label><input id="capability-query" type="search" placeholder="搜索能力、用途、标签或稳定 ID…"></div>
-    <div class="catalog-filters"><label>语言<select id="filter-language"><option value="">全部语言</option></select></label><label>领域<select id="filter-domain"><option value="">全部领域</option></select></label><label>类型<select id="filter-kind"><option value="">全部类型</option></select></label><label>来源<select id="filter-origin"><option value="">全部来源</option></select></label><label>体验方式<select id="filter-mode"><option value="">全部方式</option><option value="browser">浏览器演示</option><option value="local">本地示例</option><option value="documentation">文档接入</option></select></label><button id="clear-filters" type="button">清除筛选</button></div>
-    <div class="directory-heading" aria-hidden="true"><span>能力 / 用途</span><span>语言 · 领域 · 类型</span><span>接入方式</span></div>
-    <div id="capability-list"></div><div class="pagination"><span id="capability-count" aria-live="polite"></span><div><button id="catalog-previous" type="button" aria-label="能力上一页">‹</button><span id="catalog-page-number"></span><button id="catalog-next" type="button" aria-label="能力下一页">›</button></div></div>
-  </section>
-  <div class="section-heading lab-heading"><div><h2>交互实验室</h2><p>仅展示已登记的浏览器场景。桌面、服务端、命令行等能力也可通过本地示例或文档接入。</p></div><span id="lab-package" class="muted"></span></div>
+  <section class="intro"><p class="eyebrow">把常用功能，变成下一次的起点</p><h1>先体验，再选择能力。</h1><p>筛选一组数据，创建一条记录，看看功能如何工作。</p></section>
   <div class="lab-layout" id="lab">
     <section class="panel laboratory" aria-labelledby="lab-title">
-      <h2 id="lab-title">数据表格</h2>
+      <div class="experience-header"><h2 id="lab-title">数据表格</h2><span class="simulation">浏览器模拟</span></div>
       <div class="tabs" role="tablist" aria-label="交互演示">
         <button type="button" role="tab" id="tab-table" data-tab="table" aria-controls="pane-table" aria-selected="true" tabindex="0">数据表格</button>
         <button type="button" role="tab" id="tab-form" data-tab="form" aria-controls="pane-form" aria-selected="false" tabindex="-1">配置表单</button>
@@ -45,29 +39,33 @@
         <div class="pagination"><span id="table-count" aria-live="polite"></span><div><button id="previous" type="button" aria-label="上一页">‹</button><span id="page-number"></span><button id="next" type="button" aria-label="下一页">›</button></div></div>
       </section>
       <section id="pane-form" role="tabpanel" aria-labelledby="tab-form" hidden>
-        <p class="panel-description">按字段配置采集数据。提交后把样例加入左侧表格，刷新页面即清空。</p>
+        <p class="panel-description">创建一条样例，再到数据表格中查看。</p>
         <form id="sample-form"><label for="record-name">名称 <span class="required">*</span></label><input id="record-name" name="name" required maxlength="40" placeholder="例如：新的数据组件"><label for="record-category">分类</label><select id="record-category" name="category"><option>界面组件</option><option>数据工具</option><option>工程基础</option></select><label for="record-note">说明</label><textarea id="record-note" name="note" maxlength="200" rows="3" placeholder="可选，不会上传任何数据"></textarea><div class="actions"><button class="primary" type="submit">添加样例</button><button type="reset">重置</button></div></form><p id="form-status" class="status" role="status"></p>
       </section>
       <section id="pane-search" role="tabpanel" aria-labelledby="tab-search" hidden>
-        <p class="panel-description">模拟防抖、请求代次与协作取消。快速修改文字时只显示最新结果；输入「超时」体验超时状态。</p>
-        <label for="async-query">搜索真实能力名称或模块</label><div class="search-line"><input id="async-query" type="search" placeholder="例如：表格、storage、日志"><button id="cancel-search" type="button" disabled>取消</button></div><p id="async-status" class="status" role="status">输入关键词开始搜索。</p><ul id="async-results" class="results"></ul>
+        <p class="panel-description">快速修改关键词，只显示最新结果；输入「超时」可体验失败状态。</p>
+        <label for="async-query">搜索能力</label><div class="search-line"><input id="async-query" type="search" placeholder="例如：表格、storage、日志"><button id="cancel-search" type="button" disabled>取消</button></div><p id="async-status" class="status" role="status">输入关键词开始搜索。</p><ul id="async-results" class="results"></ul>
       </section>
       <section id="pane-redact" role="tabpanel" aria-labelledby="tab-redact" hidden>
-        <p class="panel-description">按结构化键名递归脱敏，保留非敏感字段。自由文本不会自动识别；此处仅作浏览器行为示意。</p>
+        <p class="panel-description">隐藏样例中的密码和令牌，保留其他内容。</p>
         <label for="redact-input">样例 JSON（请勿输入真实敏感信息）</label><textarea id="redact-input" rows="7" spellcheck="false">{"actor":"sample-user","password":"demo-only","detail":{"token":"sample-token","count":3},"message":"example text"}</textarea><div class="actions"><button id="redact-button" type="button" class="primary">生成脱敏结果</button></div><p id="redact-status" class="status" role="status"></p><pre id="redact-output" tabindex="0" aria-label="脱敏结果"></pre>
       </section>
-      <p class="boundary">浏览器端等价交互示意 · 不执行 Python / Qt，不访问设备或业务数据库。</p>
+      <p class="boundary">演示使用临时样例，刷新后清空。</p>
     </section>
-    <aside class="panel context" aria-labelledby="context-title"><h2 id="context-title">接入这项能力</h2><p>此面板跟随当前演示切换。运行环境和依赖由该示例明确声明。</p><h3>对应本地示例</h3><div class="code-line"><code id="context-command"></code><button class="copy" id="copy-context" type="button" aria-label="复制运行命令">复制</button></div><p class="muted">先克隆仓库并安装依赖，命令在仓库根目录执行。</p><div class="context-links"><a id="context-guide">使用指南 <span>↗</span></a><a id="context-contract">接口契约 <span>↗</span></a><a id="context-source">查看源码 <span>↗</span></a></div><div class="context-foot"><span class="dot"></span> <span id="context-id">desktop.table</span></div></aside>
+    <aside class="experience-story" aria-labelledby="experience-title"><p class="scene-label" id="scene-label">查找与浏览</p><h2 id="experience-title">从一组记录中<br>快速找到目标。</h2><p id="experience-summary">搜索、分类、翻页，一起体验。</p><ul id="experience-outcomes" class="outcome-list"></ul><a class="story-link" id="context-guide">使用这项能力 →</a></aside>
   </div>
-  <section class="panel" id="examples"><div class="section-heading"><div><h2>示例与接入</h2><p>按示例声明的运行环境执行；静态文档、服务端与命令行能力不强制提供浏览器演示。</p></div><a data-link="demoGuide">完整运行说明 ↗</a></div><label class="sr-only" for="demo-package">按能力包筛选示例</label><select id="demo-package"><option value="">全部能力包</option></select><div id="demo-list"></div></section>
-  <section class="panel" id="docs"><h2>文档与 Wiki</h2><div class="doc-links"><a data-link="docs"><strong>文档中心 ↗</strong><span>架构、收录流程与验证维护</span></a><a data-link="wiki"><strong>Wiki ↗</strong><span>上手、能力地图、组合场景与排障</span></a><a data-link="repository"><strong>GitHub 仓库 ↗</strong><span>源码、测试、许可与贡献规范</span></a></div></section>
-  <footer>AC Lab · 许可与使用边界以各能力包声明为准 · 浏览器状态只保留在当前页面。<span id="revision"></span></footer>
+  <section class="catalog-section" id="overview" aria-labelledby="catalog-title">
+    <div class="section-heading"><div><h2 id="catalog-title">还能带走哪些功能？</h2><p id="catalog-summary">找到需要的能力，查看使用文档。</p></div><label class="sr-only" for="capability-query">搜索能力</label><input id="capability-query" type="search" placeholder="搜索功能或用途…"></div>
+    <div class="catalog-filters"><label>语言<select id="filter-language"><option value="">全部语言</option></select></label><label>领域<select id="filter-domain"><option value="">全部领域</option></select></label><label>类型<select id="filter-kind"><option value="">全部类型</option></select></label><label>体验<select id="filter-mode"><option value="">全部能力</option><option value="browser">在线体验</option><option value="local">本地体验</option><option value="documentation">查看文档</option></select></label><button id="clear-filters" type="button">清除筛选</button></div>
+    <div id="capability-list" class="capability-grid"></div><div class="pagination"><span id="capability-count" aria-live="polite"></span><div><button id="catalog-previous" type="button" aria-label="能力上一页">‹</button><span id="catalog-page-number"></span><button id="catalog-next" type="button" aria-label="能力下一页">›</button></div></div>
+  </section>
+  <section class="scenario-section" id="examples"><div class="section-heading"><div><h2>把能力组合起来</h2><p>从一个完整场景，认识各项功能如何配合。</p></div></div><label class="sr-only" for="demo-package">按能力包筛选场景</label><select id="demo-package"><option value="">全部场景</option></select><div id="demo-list" class="scenario-list"></div></section>
+  <section class="documentation-section" id="docs"><h2>开始用到项目里</h2><div class="doc-links"><a data-link="docs"><strong>文档中心 <span>→</span></strong><span>从使用指南到接口、版本、依赖与兼容要求，集中查阅。</span></a></div></section>
+  <footer>AC Lab · 可复用能力库<a href="#lab">回到体验 ↑</a></footer>
 </main>
 </div>
-<dialog id="capability-detail" aria-labelledby="detail-title"><div class="detail-header"><h2 id="detail-title">能力详情</h2><button id="close-detail" type="button" aria-label="关闭能力详情">关闭</button></div><div id="detail-content"></div></dialog>
 <div id="announcement" class="toast" role="status" hidden></div>
-<noscript><p class="noscript">交互演示需要 JavaScript。请直接访问 github.com/weisiwu/ac-reusable-capabilities 查看文档与本地示例。</p></noscript>
+<noscript><p class="noscript">交互演示需要 JavaScript。<a href="./docs/README.html">阅读文档中心</a>。</p></noscript>
 <script src="./data.js"></script><script type="module" src="./assets/app.mjs"></script>
 </body>
 </html>

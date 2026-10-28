@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "auth"]
 summary: "auth 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -13,6 +13,30 @@ article_status: published
 # desktop.auth
 
 导入路径：`ctf_desktop.auth`。场景接入见 [使用指南](../guides/auth.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `CredentialStore.find_by_username` | `find_by_username(username: str) -> Mapping[str, object] \| None` |
+| `Principal` | `Principal(subject: str, roles: frozenset[str] = field(default_factory=frozenset))` |
+| `PasswordHasher` | `PasswordHasher(iterations: int=310000, *, max_verify_iterations: int=2000000)` |
+| `PasswordHasher.hash` | `hash(password: str) -> str` |
+| `PasswordHasher.verify` | `verify(password: str, encoded: str) -> bool` |
+| `PasswordHasher.needs_rehash` | `needs_rehash(encoded: str) -> bool` |
+| `AuthService` | `AuthService(store: CredentialStore, hasher: PasswordHasher \| None=None)` |
+| `AuthService.authenticate` | `authenticate(username: str, password: str) -> Principal \| None` |
+| `AccessPolicy` | `AccessPolicy(allows: Callable[[Principal, str, object], bool])` |
+| `AccessPolicy.require` | `require(principal: Principal, action: str, resource: object=None) -> None` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `Principal.subject` | `str` | 必填 |
+| `Principal.roles` | `frozenset[str]` | `field(default_factory=frozenset)` |
 
 ## CredentialStore
 

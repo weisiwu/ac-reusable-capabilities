@@ -4,7 +4,7 @@ category: "AI"
 tags: ["area/software-development", "type/reusable-capabilities"]
 summary: "收集从项目中提炼的可复用函数、组件和工程能力，以完整契约、测试和 Pull Request 交付。"
 created: 2026-10-08
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -16,7 +16,11 @@ article_status: published
 
 桌面基础能力包已收录到默认分支。包发布与接入项目验收分别进行，具体依据见包内验证记录。
 
-[在线 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [本地 Demo](demo/README.md) · [Wiki](wiki/Home.md) · [文档中心](docs/README.md)
+[功能展示与 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [文档中心](https://weisiwu.github.io/ac-reusable-capabilities/docs/README.html)
+
+展示页负责功能效果和交互；文档中心统一提供快速开始、能力选择、组合场景、版本、依赖、兼容性及包内使用指南和接口契约。文档网页随 Pages 从同一提交构建，是否已更新以部署记录与文档的源码提交为准。
+
+仓库内阅读：[本地 Demo](demo/README.md) · [文档中心源文档](docs/README.md)
 
 ```bash
 # 在仓库根目录，使用 Python >= 3.11

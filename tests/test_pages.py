@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,11 +23,33 @@ class PagesTests(unittest.TestCase):
             packages = json.loads((ROOT / 'catalog.json').read_text())['packages']
             self.assertEqual(len(data['capabilities']), sum(len(p['capabilities']) for p in packages))
             self.assertEqual(len(data['demos']), len(json.loads((ROOT / 'demo/catalog.json').read_text())['demos']))
-            self.assertIn(f'/blob/{revision}/', data['wiki'])
+            self.assertIn(f'/blob/{revision}/', data['sourceWiki'])
+            self.assertIn(f'/blob/{revision}/', data['sourceDocs'])
+            self.assertEqual(data['wiki'], 'wiki/Home.html')
+            for relative in [data['wiki'], data['docs'], 'assets/docs.css', 'assets/docs.js', 'assets/mermaid.min.js', 'doc-index.js']:
+                self.assertTrue((output / relative).is_file(), relative)
+            for capability in data['capabilities']:
+                self.assertTrue((output / unquote(capability['guide'])).is_file())
+                self.assertTrue((output / unquote(capability['contract'])).is_file())
             for relative in ['index.html', 'assets/app.mjs', 'assets/models.mjs', 'assets/style.css', '.nojekyll']:
                 self.assertTrue((output / relative).is_file(), relative)
             self.assertNotIn(str(ROOT), raw)
             self.assertNotIn('/assets/', (output / 'index.html').read_text().replace('./assets/', ''))
+            redirects = {'Home': 'README', 'Getting-Started': '快速开始', 'Capabilities': '能力地图',
+                         'Recipes': '组合场景', 'Compatibility': '版本与兼容',
+                         'Troubleshooting': '排障指南', 'Contributing': '能力收录流程', '_Sidebar': 'README'}
+            for previous, current in redirects.items():
+                legacy = (output / f'wiki/{previous}.html').read_text(encoding='utf-8')
+                self.assertIn('id="redirect-target"', legacy)
+                self.assertIn(f'../docs/{current}.html', unquote(legacy))
+            index = json.loads((output / 'doc-index.js').read_text().removeprefix('window.AC_DOC_INDEX = ').strip().removesuffix(';'))
+            self.assertFalse(any(item['path'].startswith('wiki/') for item in index))
+            self.assertEqual(sum(item['path'] == 'docs/快速开始.html' for item in index), 1)
+            home = (output / 'docs/README.html').read_text(encoding='utf-8')
+            for label in ['快速开始', '能力指南', '接口参考', '版本兼容', '组合排障', '贡献维护']:
+                self.assertIn(f'<summary>{label}</summary>', home)
+            self.assertNotIn('>Wiki</a>', home)
+            self.assertNotIn('>Docs</a>', home)
 
     def test_invalid_repository_rejected_before_writing(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -46,6 +69,7 @@ class PagesTests(unittest.TestCase):
             fixture = Path(directory).resolve() / 'repository'
             fixture.mkdir()
             shutil.copytree(ROOT / 'site', fixture / 'site')
+            (fixture / 'site/README.md').write_text('fixture only')
             # Temporary fixtures demonstrate presentation compatibility, not shipped packages.
             (fixture / 'site/demos.json').write_text(json.dumps({'schema_version':1,'scenes':[]}))
             for path in ['docs/README.md','wiki/Home.md','demo/README.md','origins.md',

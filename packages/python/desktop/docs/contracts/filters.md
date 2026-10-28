@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "filters"]
 summary: "filters 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,39 @@ required_extra: qt
 # desktop.filters
 
 导入路径：`ctf_desktop.filters`。场景接入见 [使用指南](../guides/filters.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `FilterField` | `FilterField(key: str, label: str, kind: str = 'text', choices: tuple[tuple[Any, str], ...] = ())` |
+| `FilterPanel` | `FilterPanel(fields: Sequence[FilterField], parent=None)` |
+| `FilterPanel.values` | `values() -> dict[str, Any]` |
+| `FilterPanel.clear` | `clear() -> None` |
+| `LiveSearchComboBox` | `LiveSearchComboBox(delay_ms: int=200, parent=None)` |
+| `LiveSearchComboBox.set_results` | `set_results(query: str, results: Sequence[tuple[Any, str]], *, request_id: int \| None=None) -> bool` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `FilterField.key` | `str` | 必填 |
+| `FilterField.label` | `str` | 必填 |
+| `FilterField.kind` | `str` | `'text'` |
+| `FilterField.choices` | `tuple[tuple[Any, str], ...]` | `()` |
+
+## Qt 信号
+
+这些信号在 Qt 线程连接和处理；信号参数中的 `object` 具体含义见使用指南。
+
+| 信号 | 参数类型 |
+| --- | --- |
+| `FilterPanel.search_requested` | `(dict)` |
+| `FilterPanel.reset_requested` | `()` |
+| `LiveSearchComboBox.search_requested` | `(str)` |
+| `LiveSearchComboBox.request_started` | `(int, str)` |
 
 ## FilterField
 

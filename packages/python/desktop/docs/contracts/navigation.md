@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "navigation"]
 summary: "navigation 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,35 @@ required_extra: qt
 # desktop.navigation
 
 导入路径：`ctf_desktop.navigation`。场景接入见 [使用指南](../guides/navigation.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `PageSpec` | `PageSpec(key: str, title: str, create: Callable[[], QWidget])` |
+| `PageHost` | `PageHost(parent=None)` |
+| `PageHost.register` | `register(spec: PageSpec) -> None` |
+| `PageHost.navigate` | `navigate(key: str) -> QWidget` |
+| `PageHost.dispose` | `dispose() -> None` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `PageSpec.key` | `str` | 必填 |
+| `PageSpec.title` | `str` | 必填 |
+| `PageSpec.create` | `Callable[[], QWidget]` | 必填 |
+
+## Qt 信号
+
+这些信号在 Qt 线程连接和处理；信号参数中的 `object` 具体含义见使用指南。
+
+| 信号 | 参数类型 |
+| --- | --- |
+| `PageHost.page_changed` | `(str)` |
+| `PageHost.navigation_failed` | `(str, object)` |
 
 ## PageSpec
 

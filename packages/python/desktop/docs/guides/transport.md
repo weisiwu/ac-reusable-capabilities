@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "serial", "type/usage-guide"]
 summary: "串口工厂注入、配置、短写处理、关闭失败重试与设备协议边界。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 字节传输与串口
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 接口使用标准库；真实串口需要 `serial` extra |
+| 核心入口 | `SerialConfig` / `SerialTransport` |
+| 调用顺序 | 配置端口 → open → write/read → 协议层处理 → close |
+| 关键边界 | 短写和驱动异常为 `TransportError`；不处理帧、CRC 或自动重连 |
+| 方法 / 属性 | `open`, `write`, `read`, `close` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["配置端口"]
+    N1["open"]
+    N0 --> N1
+    N2["write/read"]
+    N1 --> N2
+    N3["协议层处理"]
+    N2 --> N3
+    N4["close"]
+    N3 --> N4
+```
+
 
 ## 接入顺序
 

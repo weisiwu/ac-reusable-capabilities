@@ -4,13 +4,41 @@ category: "工程能力"
 tags: ["desktop", "runtime", "type/usage-guide"]
 summary: "目录配置与单实例的场景选择、接入步骤、错误处理、资源所有权与验证入口。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
 ---
 
 # 目录配置与单实例
+
+
+## 接入速查
+
+| 接入项 | 要求 / 用法 |
+| --- | --- |
+| 环境与依赖 | 目录与 JSON 使用标准库；单实例需 Qt |
+| 核心入口 | `AppPaths` / `load_json_config` / `SingleInstance` |
+| 调用顺序 | 确定路径 → 校验配置 → acquire → 运行 → release |
+| 关键边界 | 目录计算不创建；`ensure_user_data` 才创建；单实例失败不终止别人 |
+| 方法 / 属性 | `user_data`, `ensure_user_data`, `acquire`, `release` |
+| 版本与兼容 | [依赖说明](../架构与依赖.md) · [升级说明](../升级与兼容.md) |
+
+## 接入流程
+
+```mermaid
+flowchart LR
+    N0["确定路径"]
+    N1["校验配置"]
+    N0 --> N1
+    N2["acquire"]
+    N1 --> N2
+    N3["运行"]
+    N2 --> N3
+    N4["release"]
+    N3 --> N4
+```
+
 
 ## 适用场景
 

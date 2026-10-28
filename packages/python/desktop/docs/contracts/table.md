@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/api-contract", "desktop", "table"]
 summary: "table 模块的公开输入输出、边界与副作用。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -14,6 +14,39 @@ required_extra: qt
 # desktop.table
 
 导入路径：`ctf_desktop.table`。场景接入见 [使用指南](../guides/table.md)。
+
+## 调用签名与默认值
+
+以下表格核对当前源码声明；`*` 后的参数只能按名称传入。未标注返回类型的接口，其实际输出和异常以本页后续契约为准。
+
+| 接口 | 签名 |
+| --- | --- |
+| `Column` | `Column(key: str, title: str, display: Callable[[Any], str] = str)` |
+| `RecordTableModel` | `RecordTableModel(columns: Sequence[Column], parent=None)` |
+| `RecordTableModel.rowCount` | `rowCount(parent=QModelIndex()) -> int` |
+| `RecordTableModel.columnCount` | `columnCount(parent=QModelIndex()) -> int` |
+| `RecordTableModel.data` | `data(index: QModelIndex, role=Qt.DisplayRole)` |
+| `RecordTableModel.headerData` | `headerData(section: int, orientation: Qt.Orientation, role=Qt.DisplayRole)` |
+| `RecordTableModel.set_records` | `set_records(records: Sequence[Mapping[str, Any]]) -> None` |
+| `PagedTable` | `PagedTable(columns: Sequence[Column], page_size: int=20, parent=None)` |
+| `PagedTable.set_page` | `set_page(page: PageResult) -> None` |
+| `PagedTable.selected_records` | `selected_records() -> tuple[Mapping[str, Any], ...]` |
+
+## 配置字段与只读属性
+
+| 字段 / 属性 | 类型 | 默认值 / 要求 |
+| --- | --- | --- |
+| `Column.key` | `str` | 必填 |
+| `Column.title` | `str` | 必填 |
+| `Column.display` | `Callable[[Any], str]` | `str` |
+
+## Qt 信号
+
+这些信号在 Qt 线程连接和处理；信号参数中的 `object` 具体含义见使用指南。
+
+| 信号 | 参数类型 |
+| --- | --- |
+| `PagedTable.page_requested` | `(object)` |
 
 ## Column
 

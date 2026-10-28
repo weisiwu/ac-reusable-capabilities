@@ -5,7 +5,11 @@ import os
 from pathlib import Path
 import re
 import shutil
+import sys
 from urllib.parse import quote
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from docs_build import build_docs, canonical_document_path, document_path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -83,13 +87,25 @@ def _build(output, repository, revision):
         capability['modes'] = ['documentation'] + (['local'] if local else []) + (['browser'] if browser else [])
     data = dict(repository=f'https://github.com/{repository}', revision=revision, packages=package_data,
                 capabilities=capabilities, demos=demos, origins=list(origins.values()), browserDemos=scenes,
-                docs=link('docs/README.md'), wiki=link('wiki/Home.md'), demoGuide=link('demo/README.md'))
+                docs=document_path('docs/README.md'), wiki=document_path('wiki/Home.md'),
+                sourceWiki=link('wiki/Home.md'), sourceDocs=link('docs/README.md'),
+                demoGuide=document_path('demo/README.md'))
     output = Path(output).resolve()
     if output == ROOT or output in ROOT.parents or output.is_relative_to(ROOT / 'site'):
         raise ValueError('output must not overwrite source files')
     (output / 'assets').mkdir(parents=True, exist_ok=True)
+    public_docs = build_docs(ROOT, output, list(packages.values()), repository, revision)
+    def reading_link(source):
+        if source not in public_docs:
+            raise ValueError(f'missing public documentation: {source}')
+        return quote(canonical_document_path(source), safe='/')
+    for item, original in zip(capabilities, (capability for package in packages.values() for capability in package['capabilities'])):
+        item['guide'] = reading_link(original['guide'])
+        item['contract'] = reading_link(original['contract'])
+    for demo, original in zip(demos, demo_catalog['demos']):
+        demo['guide'] = reading_link(original['guide'])
     shutil.copyfile(ROOT / 'site/index.html', output / 'index.html')
-    for name in ('style.css', 'app.mjs', 'models.mjs'):
+    for name in ('style.css', 'app.mjs', 'models.mjs', 'favicon.svg'):
         shutil.copyfile(ROOT / 'site/assets' / name, output / 'assets' / name)
     payload = json.dumps(data, ensure_ascii=False).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
     (output / 'data.js').write_text('window.AC_DATA = ' + payload + ';\n', encoding='utf-8')

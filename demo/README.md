@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["type/handbook", "能力复用"]
 summary: "按能力领域发现和运行示例，区分交互演示、自动验证与依赖。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -65,7 +65,7 @@ core、failures 与 contracts 本身会自动退出，不接受 `--smoke`。这�
 
 - [组合源码](../packages/python/desktop/examples/desktop_demo.py)、[六页展示](../packages/python/desktop/examples/qt_showcase.py)、[后台搜索](../packages/python/desktop/examples/background_search.py)。
 - [失败恢复源码](../packages/python/desktop/examples/failure_scenarios.py)、[契约例子检查器](../packages/python/desktop/examples/check_contract_examples.py)。
-- [Wiki 场景索引](../wiki/Home.md)、[文档总览](../docs/README.md)、[包内手册](../packages/python/desktop/docs/README.md)。
+- [文档中心](../docs/README.md)、[组合场景](../docs/组合场景.md)、[包内手册](../packages/python/desktop/docs/README.md)。
 
 ## 后续添加其他项目的 demo
 

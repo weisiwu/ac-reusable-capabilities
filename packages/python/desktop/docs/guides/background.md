@@ -4,7 +4,7 @@ category: "工程能力"
 tags: ["desktop", "async", "type/usage-guide"]
 summary: "有界的最新请求任务、Qt线程交付、协作取消、超时和关闭。"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -12,30 +12,104 @@ article_status: published
 
 # 后台任务与异步查询
 
-## 使用场景
+将只关心最新结果的读取放到工作线程，并在 Qt 线程交付结果。一个执行槽与一个可替换等待槽限制待处理数量。
 
-慢列表查询、联想输入、加载只读详情等只关心最新结果的任务。使用 BackgroundTaskRunner 将 IO 移出 GUI；只允许一个执行中任务和一个待执行任务，新请求替换等待槽，不为每次按键积累无界任务队列。
+## 接入速查
 
-这不是批量队列；写入、收费、打印等必须执行每条请求的操作不能直接套用 latest-wins。它也不强制杀线程或终止原生库。
+| 项目 | 要求 / 行为 |
+| --- | --- |
+| 环境 | Python >= 3.11；`qt` extra，PyQt5 >= 5.15；Qt 事件循环 |
+| 导入 | `from ctf_desktop.background import BackgroundTaskRunner` |
+| 操作函数 | `operation(cancel_event)`；返回任意值；在工作线程运行 |
+| 调度语义 | 最新请求替换旧等待项；旧结果不会再交付 |
+| 退出 | 在拥有者线程 `close()`，操作本身须有有限结束条件 |
+| 不适用 | 必须逐条执行的写入、收费、打印；不可协作取消的无限 IO |
+| 版本 / 兼容 | [依赖](../架构与依赖.md) · [升级](../升级与兼容.md) |
 
-## 接口与信号
+## 请求生命周期
 
-在 Qt 线程构造并调用 runner。submit(operation, timeout_ms=None) 返回递增请求 ID；operation 接收 threading.Event，在后台线程执行。正常结果通过 succeeded(id,value)，错误通过 failed(id,error) 回到 Qt 线程。取消与超时分别发 cancelled(id)、timed_out(id)，迟到结果被忽略。
+```mermaid
+flowchart TD
+    A[Qt 线程 submit] --> B[递增 ID 并取消旧请求]
+    B --> C[一个运行槽和一个可替换等待槽]
+    C --> D[工作线程 operation 接收取消 Event]
+    D --> E{仍为最新有效请求}
+    E -->|否| F[忽略迟到结果]
+    E -->|是| G{操作结果}
+    G -->|返回| H[succeeded 在 Qt 线程交付]
+    G -->|异常| I[failed 在 Qt 线程交付]
+    A --> J[cancel 或超时]
+    J --> K[通知取消 Event 并阻止结果交付]
+```
 
-每个回调自己创建/关闭该线程使用的数据库连接或 HTTP/串口句柄，不把 SqliteStore 的 GUI 线程连接传过去。外部 IO 设置超时，循环使用 event.wait 或检查 is_set；取消不是抢占式中断。
+## 方法、参数与事件
 
-## 信号回调中的重入
+| 接口 | 输入 / 默认值 | 返回与行为 |
+| --- | --- | --- |
+| `BackgroundTaskRunner(parent=None)` | 可选 QObject 父对象 | Qt 线程创建；父对象销毁会非阻塞取消 |
+| `submit(operation, *, timeout_ms=None)` | callable；超时默认不设 | 返回递增 `int` ID；替换旧任务 |
+| `timeout_ms` | `None` 或 `1..2147483647` 的整数 | `bool`、0、负数均不合法；超时阻止晚到交付，不强杀线程 |
+| `cancel()` | 无 | 取消等待槽，设置工作 Event；无活动请求时可重复调用 |
+| `close(*, wait=True)` | 默认等待 worker 释放 | 关闭后拒绝 `submit`；`wait=False` 后可再 `close(wait=True)` 等待 |
+| `succeeded(id, value)` | 请求 ID、任意返回值 | 仅最新有效请求的正常结果 |
+| `failed(id, error)` | 请求 ID、异常对象 | 仅最新有效请求的操作异常 |
+| `cancelled(id)` | 请求 ID | 替换或显式取消的通知 |
+| `timed_out(id)` | 请求 ID | 超时通知，与手动取消分开 |
 
-替换任务时，先完成新任务的编号、等待槽和超时设置，再发出旧任务的 cancelled 通知。通知回调可以再次 submit 或 close；回调里提交的任务代次更新，外层 submit 仍返回自身的编号，不覆盖回调的状态。被取消的操作可能已经开始执行，因此仍须观察取消 Event，不能依赖取消撤销副作用。
+`submit` 非法参数在修改状态前抛 `ValueError`；关闭后提交抛 `RuntimeError`。新请求状态先建立，再发送旧请求取消通知，信号回调重入提交时，以回调提交的更新代次为准。
 
-close 在发出取消通知前已标记关闭；通知回调可以重复 close，随后 submit 会被拒绝。同一次联想搜索的 request_started 和 search_requested 使用相同文字快照，即使第一个信号的回调改了输入框。
+## 可运行示例：有限任务与安全退出
 
-## 生命周期
+示例启动 Qt 事件循环等待信号，并设置兜底退出。真实 IO 必须在操作内设置超时、创建并关闭连接；不能借用 GUI 线程的 SQLite 连接。
 
-显式 close() 默认等待后台资源释放；只能在操作有有限结束条件时使用。close(wait=False) 先取消返回，之后 close(wait=True) 可以等待。QObject 父对象销毁会非阻塞取消；它不能保证不合作的第三方调用马上退出。不得在后台 operation 内关闭并等待自己的 worker。
+```python
+from PyQt5.QtCore import QEventLoop, QTimer
+from PyQt5.QtWidgets import QApplication
+from ctf_desktop.background import BackgroundTaskRunner
 
-## 联想输入配合
+app = QApplication.instance() or QApplication([])
+runner = BackgroundTaskRunner()
+loop = QEventLoop()
+received = []
 
-监听 LiveSearchComboBox.request_started(request_id,query)，将 ID 和文字一起作为任务输入。结果在 GUI 线程调用 set_results(query,rows,request_id=request_id)。这样同样文字的旧请求也会被拒绝。原 search_requested(query) 和不带 request_id 的调用保持兼容，但旧用法只有文字比较，不具备代次保证。
+def operation(cancel_event):
+    if cancel_event.wait(0.01):
+        return None
+    return ["示例结果"]
 
-[完整搜索例子](../../examples/background_search.py) 可交互运行，也支持 --smoke 自动验证后退出。任务的正常、异常、取消、超时、队列上限、相同关键词乱序及父对象销毁见 tests/test_background.py。
+def delivered(identity, value):
+    received.append((identity, value))
+    loop.quit()
+
+runner.succeeded.connect(delivered)
+runner.failed.connect(lambda identity, error: loop.quit())
+runner.timed_out.connect(lambda identity: loop.quit())
+watchdog = QTimer()
+watchdog.setSingleShot(True)
+watchdog.timeout.connect(loop.quit)
+try:
+    identity = runner.submit(operation, timeout_ms=1000)
+    watchdog.start(2000)
+    loop.exec_()
+    assert received == [(identity, ["示例结果"])]
+finally:
+    watchdog.stop()
+    runner.close()
+```
+
+## 与联想输入组合
+
+监听 `LiveSearchComboBox.request_started(request_id, query)`，将联想控件的 ID 与文字保留在结果上下文；Qt 线程收到 runner 结果后调用 `set_results(query, rows, request_id=request_id)`。两个组件各自的 ID 来自独立计数器，不应假定相等。
+
+原 `search_requested(query)` 与不带 ID 的调用保持兼容，但只有文字比较，同一关键词的旧结果没有代次保证。完整绑定见 [后台搜索示例](../../examples/background_search.py) 和 [筛选契约](../contracts/filters.md)。
+
+## 取消、超时与清理
+
+| 状态 | 用户可见结果 | 资源约束 |
+| --- | --- | --- |
+| 替换 / 取消 | 旧结果不显示 | 已开始的操作仍须观察 Event；不能依靠取消撤销副作用 |
+| 超时 | 发出 `timed_out`，忽略晚到结果 | 外部原生调用仍可能运行；设置它自身的 IO 超时 |
+| `close(wait=True)` | 停止新交付并等待退出 | 只能等待有界、可合作的操作；不在 worker 内等待自己 |
+| 父对象销毁 | 非阻塞取消 | 不能据此声称第三方 IO 已立即结束 |
+
+不要在工作线程读写 Qt 控件。关闭应用时先取消、再等待任务与其连接释放。测试覆盖正常、异常、取消、超时、队列上限、重入及父对象销毁，入口为 [test_background.py](../../tests/test_background.py)；[公开契约](../contracts/background.md) 给出精确签名。
