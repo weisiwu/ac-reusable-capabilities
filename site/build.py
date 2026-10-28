@@ -9,7 +9,7 @@ import sys
 from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from docs_build import build_docs, document_path
+from docs_build import build_docs, canonical_document_path, document_path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -88,7 +88,8 @@ def _build(output, repository, revision):
     data = dict(repository=f'https://github.com/{repository}', revision=revision, packages=package_data,
                 capabilities=capabilities, demos=demos, origins=list(origins.values()), browserDemos=scenes,
                 docs=document_path('docs/README.md'), wiki=document_path('wiki/Home.md'),
-                sourceWiki=link('wiki/Home.md'), demoGuide=document_path('demo/README.md'))
+                sourceWiki=link('wiki/Home.md'), sourceDocs=link('docs/README.md'),
+                demoGuide=document_path('demo/README.md'))
     output = Path(output).resolve()
     if output == ROOT or output in ROOT.parents or output.is_relative_to(ROOT / 'site'):
         raise ValueError('output must not overwrite source files')
@@ -97,7 +98,7 @@ def _build(output, repository, revision):
     def reading_link(source):
         if source not in public_docs:
             raise ValueError(f'missing public documentation: {source}')
-        return quote(document_path(source), safe='/')
+        return quote(canonical_document_path(source), safe='/')
     for item, original in zip(capabilities, (capability for package in packages.values() for capability in package['capabilities'])):
         item['guide'] = reading_link(original['guide'])
         item['contract'] = reading_link(original['contract'])

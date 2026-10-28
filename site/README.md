@@ -2,7 +2,7 @@
 title: "GitHub Pages Demo 站点"
 category: "工程能力"
 tags: ["type/handbook", "demo", "github-pages"]
-summary: "功能展示、同源 Wiki / Docs 的构建、验证与发布维护。"
+summary: "功能展示与统一文档中心的构建、验证、历史链接迁移和发布维护。"
 created: 2026-10-20
 updated: 2026-10-28
 metadata_status: reviewed
@@ -12,7 +12,7 @@ article_status: published
 
 # GitHub Pages Demo 站点
 
-站点入口：<https://weisiwu.github.io/ac-reusable-capabilities/>。展示内容由本目录静态页面与仓库真实能力清单构建，Wiki / Docs 从同一次 checkout 的 Markdown 渲染；是否完成某次发布，以 GitHub Actions 的部署状态及线上版本为准。
+站点入口：<https://weisiwu.github.io/ac-reusable-capabilities/>。展示内容由本目录静态页面与仓库真实能力清单构建，文档中心从同一次 checkout 的 Markdown 渲染；是否完成某次发布，以 GitHub Actions 的部署状态及线上版本为准。
 
 ## 能体验什么
 
@@ -29,10 +29,12 @@ article_status: published
 | 入口 | 内容 | 正文来源 |
 | --- | --- | --- |
 | 首页与交互 Demo | 功能、效果和直接操作，保留简短的浏览器模拟标注 | `site/index.html`、`site/assets/` 与公开清单 |
-| `wiki/Home.html` | 能力选择、接入顺序和组合场景 | `wiki/` 中的 Markdown |
-| `docs/README.html` 与包文档 | 安装、版本、依赖、兼容矩阵、流程、属性、信号、代码和异常清理 | 根 `docs/` 与已收录包的 Markdown |
+| `docs/README.html` | 统一的快速开始、能力地图、组合场景、版本兼容、排障与贡献导航 | 根 `docs/` 中的 Markdown |
+| 包内文档网页 | 精确依赖、兼容、流程、属性、信号、调用及异常清理 | 已收录包内的权威 Markdown |
 
-文档网页提供页面目录、搜索、表格、代码复制和流程图。Markdown 是唯一正文来源；网页链接在构建时改写为同站 HTML，源码入口固定到构建提交，不另手工维护 HTML 正文。Mermaid 11.12.1 随站点资源本地提供，浏览器无需访问 CDN。
+旧 `wiki/Home.html`、`wiki/Getting-Started.html` 等地址保留迁移跳转，分别进入文档中心对应页面；`wiki/` 中的 Markdown 仅作为迁移存根，不作为新导航入口，也不重复参与内容搜索。
+
+文档中心提供页面目录、搜索、表格、代码复制和流程图。Markdown 是唯一正文来源；网页链接在构建时改写为同站 HTML，源码入口固定到构建提交，不另手工维护 HTML 正文。Mermaid 11.12.1 随站点资源本地提供，浏览器无需访问 CDN。
 
 ## 本地构建与预览
 

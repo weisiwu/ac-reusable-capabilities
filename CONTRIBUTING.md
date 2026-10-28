@@ -4,7 +4,7 @@ category: "AI"
 tags: ["area/software-development", "type/contribution-policy"]
 summary: "规定复用评估、标准注释、稳定标记、测试与 MR 审阅要求。"
 created: 2026-10-08
-updated: 2026-10-20
+updated: 2026-10-28
 metadata_status: reviewed
 home_area: theme
 article_status: published
@@ -65,4 +65,4 @@ MR 对应 GitHub Pull Request。复用代码通过任务分支提交，不直接
 
 新增或扩展时同步能力索引、公开契约、测试、示例和来源记录。既有能力优先复用或兼容扩展，新增独立包需要明确边界和独立版本理由。提交前运行 `python scripts/check_catalog.py` 和受影响包验证。
 
-新增能力的跨包文档、Demo 和 Wiki 同步要求见 [收录流程](docs/能力收录流程.md)。示例代码保留包内，根 `demo/` 只做发现和启动；同步清单后执行 `python demo/run.py --check`，并实际运行受影响例子。
+新增能力的文档中心、包内指南、契约和 Demo 同步要求见 [收录流程](docs/能力收录流程.md)。示例代码保留包内，根 `demo/` 只做发现和启动；同步清单后执行 `python demo/run.py --check`，并实际运行受影响例子。

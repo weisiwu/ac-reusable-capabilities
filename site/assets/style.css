@@ -124,7 +124,7 @@ td button { font-size: 11px; padding: 3px 9px; border-color: transparent; color:
 .scenario-row p { font-size: 12px; margin-bottom: 0; }
 .scenario-row > a { flex-shrink: 0; font-size: 12px; }
 .documentation-section { margin: 65px 0 0; padding: 35px 0 0; border-top: 1px solid var(--line); }
-.doc-links { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; margin-top: 25px; }
+.doc-links { display: grid; grid-template-columns: 1fr; gap: 35px; margin-top: 25px; }
 .doc-links > a { padding: 24px; background: #eef6f0; border-radius: var(--radius); display: flex; flex-direction: column; gap: 8px; color: #496152; }
 .doc-links > a strong { display: flex; justify-content: space-between; color: #156b4e; font-size: 21px; }
 .doc-links > a > span { font-size: 13px; }

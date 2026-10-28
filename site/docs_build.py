@@ -12,6 +12,29 @@ from urllib.parse import quote, unquote, urlsplit, urlunsplit
 import markdown
 
 
+# Old Markdown files remain lightweight pointers; only these pages own the text.
+DOCUMENT_REDIRECTS = {
+    'wiki/Home.md': 'docs/README.md',
+    'wiki/Getting-Started.md': 'docs/快速开始.md',
+    'wiki/Capabilities.md': 'docs/能力地图.md',
+    'wiki/Recipes.md': 'docs/组合场景.md',
+    'wiki/Compatibility.md': 'docs/版本与兼容.md',
+    'wiki/Troubleshooting.md': 'docs/排障指南.md',
+    'wiki/Contributing.md': 'docs/能力收录流程.md',
+    'wiki/_Sidebar.md': 'docs/README.md',
+}
+
+LEGACY_ANCHORS = {
+    'docs/README.md': {'能力库 Wiki': '文档中心', 'Wiki 导航': '文档中心',
+                       '从你的目标开始': '快速开始', '文档与代码对应': '贡献维护'},
+    'docs/快速开始.md': {'上手步骤': '快速开始'},
+    'docs/组合场景.md': {'接入场景': '组合场景'},
+    'docs/版本与兼容.md': {'版本与兼容选择': '版本与兼容'},
+    'docs/排障指南.md': {'常见问题': '排障指南'},
+    'docs/能力收录流程.md': {'贡献入口': '贡献导航与文档同步'},
+}
+
+
 def slugify(value, separator='-'):
     value = unicodedata.normalize('NFKC', value).lower()
     value = re.sub(r'[^\w\s-]', '', value)
@@ -44,6 +67,10 @@ def document_path(source):
     return str(Path(source).with_suffix('.html')).replace(os.sep, '/')
 
 
+def canonical_document_path(source):
+    return document_path(DOCUMENT_REDIRECTS.get(source, source))
+
+
 def relative_url(target, page):
     return quote(os.path.relpath(target, Path(page).parent).replace(os.sep, '/'), safe='/')
 
@@ -73,7 +100,7 @@ class ReadingHTML(HTMLParser):
         if target.is_dir() and f'{relative}/README.md' in self.sources:
             relative += '/README.md'
         if relative in self.sources:
-            path = relative_url(document_path(relative), document_path(self.source))
+            path = relative_url(canonical_document_path(relative), document_path(self.source))
         elif image and target.suffix.lower() in ('.png', '.jpg', '.jpeg', '.svg', '.webp', '.gif'):
             self.assets.add(relative)
             path = relative_url(relative, document_path(self.source))
@@ -129,37 +156,94 @@ def render_markdown(root, source, sources, base):
     return title, rendered, ''.join(toc.output), body, cleaner.assets
 
 
+def legacy_anchors(source, content):
+    for previous, current in LEGACY_ANCHORS.get(source, {}).items():
+        identity = slugify(previous)
+        if f'id="{identity}"' in content:
+            continue
+        anchor = f'<span id="{identity}" class="legacy-anchor" aria-hidden="true"></span>'
+        pattern = r'(<h[1-6] id="' + re.escape(slugify(current)) + r'")'
+        if re.search(pattern, content):
+            content = re.sub(pattern, lambda match: anchor + match[0], content, count=1)
+        else:
+            content = anchor + content
+    return content
+
+
+def navigation_groups(documents, packages):
+    """Use reader tasks as categories, independent of the Markdown's location."""
+    remaining = set(documents)
+    groups = []
+
+    def add(label, candidates):
+        items = list(dict.fromkeys(source for source in candidates if source in remaining))
+        remaining.difference_update(items)
+        if items:
+            groups.append((label, items))
+
+    package_docs = [source for source in documents
+                    if any(source.startswith(item['path'] + '/') for item in packages)]
+    add('快速开始', ['docs/README.md', 'docs/快速开始.md', 'docs/能力地图.md']
+        + [source for source in package_docs if source.endswith('/快速开始.md')])
+    add('能力指南', [item['readme'] for item in packages]
+        + [source for source in package_docs if source.endswith('/docs/README.md')]
+        + [source for source in documents if '/guides/' in source])
+    add('接口参考', [source for source in package_docs if source.endswith('/能力目录.md')]
+        + [source for source in documents if '/contracts/' in source])
+    environment = {'架构与依赖.md', '升级与兼容.md', '生命周期与线程.md', '安全与数据边界.md',
+                   '验证记录.md', '来源与迁入边界.md', '评审与修复记录.md'}
+    add('版本兼容', ['docs/版本与兼容.md']
+        + [source for source in package_docs if Path(source).name in environment])
+    add('组合排障', ['docs/组合场景.md', 'docs/排障指南.md']
+        + [source for source in package_docs if source.endswith('/常见问题与排障.md')])
+    add('贡献维护', ['docs/能力收录流程.md', 'CONTRIBUTING.md'] + sorted(remaining))
+    return groups
+
+
+def write_redirect(output, previous, current):
+    page = document_path(previous)
+    destination = relative_url(document_path(current), page)
+    prefix = relative_url('index.html', page).removesuffix('index.html')
+    html = f'''<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'">
+<meta name="robots" content="noindex"><link rel="canonical" href="{destination}">
+<noscript><meta http-equiv="refresh" content="0;url={destination}"></noscript>
+<title>文档已迁移 · 文档中心</title><link rel="stylesheet" href="{prefix}assets/docs.css">
+<link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg"></head>
+<body><main class="doc-content"><h1>文档已迁移</h1><p>此页面已归入统一文档中心。</p>
+<p><a id="redirect-target" href="{destination}">前往对应文档 →</a></p></main>
+<script src="{prefix}assets/redirect.js" defer></script></body></html>'''
+    target = output / page
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(html, encoding='utf-8')
+
+
 def build_docs(root, output, packages, repository, revision):
     root = Path(root).resolve()
     sources = set(markdown_sources(root, packages))
     base = f'https://github.com/{repository}/blob/{quote(revision, safe="")}/'
     documents = {}
     for source in sorted(sources):
+        if source in DOCUMENT_REDIRECTS:
+            if DOCUMENT_REDIRECTS[source] not in sources:
+                raise ValueError(f'missing canonical document for {source}')
+            continue
         documents[source] = render_markdown(root, source, sources, base)
 
+    groups = navigation_groups(documents, packages)
+    categories = {source: label for label, items in groups for source in items}
     search = []
     for source, (title, content, toc, body, assets) in documents.items():
         page = document_path(source)
         prefix = relative_url('index.html', page).removesuffix('index.html')
-        section = 'Wiki' if source.startswith('wiki/') else 'Docs'
+        section = categories.get(source, '文档中心')
         package = next((item for item in packages if source.startswith(item['path'] + '/')), None)
         nav = []
-        groups = [
-            ('Wiki · 按场景上手', [s for s in documents if s.startswith('wiki/') and not s.endswith('_Sidebar.md')]),
-            ('Docs · 接入与环境', [s for s in documents if s.startswith('docs/') or (any(s.startswith(item['path'] + '/docs/') for item in packages) and '/guides/' not in s and '/contracts/' not in s)]),
-            ('使用指南', [s for s in documents if '/guides/' in s]),
-            ('API · 参数与事件', [s for s in documents if '/contracts/' in s]),
-        ]
-        wiki_order = ['wiki/Home.md', 'wiki/Getting-Started.md', 'wiki/Capabilities.md', 'wiki/Recipes.md',
-                      'wiki/Compatibility.md', 'wiki/Troubleshooting.md', 'wiki/Contributing.md']
         for label, items in groups:
-            if not items:
-                continue
-            if label.startswith('Wiki'):
-                items.sort(key=lambda item: wiki_order.index(item) if item in wiki_order else len(wiki_order))
             links = ''.join(f'<a href="{relative_url(document_path(item), page)}"' + (' aria-current="page"' if item == source else '')
                             + f'>{escape(documents[item][0])}</a>' for item in items)
-            opened = ' open' if source in items or label.startswith('Wiki') else ''
+            opened = ' open' if source in items or label == '快速开始' else ''
             nav.append(f'<details{opened}><summary>{label}</summary>{links}</details>')
         version = ''
         if package:
@@ -168,18 +252,17 @@ def build_docs(root, output, packages, repository, revision):
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
 <meta name="description" content="{escape(title, quote=True)} · AC 能力库使用文档">
-<title>{escape(title)} · AC {section}</title><link rel="stylesheet" href="{prefix}assets/docs.css">
+<title>{escape(title)} · 文档中心</title><link rel="stylesheet" href="{prefix}assets/docs.css">
 <link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg"></head>
 <body><a class="skip" href="#content">跳到正文</a>
 <header class="docs-header"><a class="docs-brand" href="{prefix}index.html">AC Lab</a><nav aria-label="站点导航">
-<a href="{prefix}index.html">功能展示</a><a href="{prefix}wiki/Home.html"{' aria-current="page"' if section == 'Wiki' else ''}>Wiki</a>
-<a href="{prefix}docs/README.html"{' aria-current="page"' if section == 'Docs' else ''}>Docs</a></nav>
+<a href="{prefix}index.html">功能展示</a><a href="{prefix}docs/README.html" aria-current="page">文档中心</a></nav>
 <a class="source-link" href="{base + quote(source, safe='/')}">查看源文档 ↗</a></header>
 <div class="docs-layout"><aside class="docs-sidebar"><label for="doc-search">搜索文档</label>
 <input type="search" id="doc-search" placeholder="能力、参数或兼容要求" autocomplete="off"><div id="search-results" aria-live="polite"></div>
 <nav aria-label="文档目录">{''.join(nav)}</nav></aside>
 <main id="content" class="doc-content"><div class="document-meta"><span>{section}</span>{version}<span>提交 {escape(revision[:7])}</span></div>
-{content}<footer>本页与源码使用同一提交。<a href="{prefix}index.html">返回功能展示</a></footer></main>
+{legacy_anchors(source, content)}<footer>本页与源码使用同一提交。<a href="{prefix}index.html">返回功能展示</a></footer></main>
 <aside class="doc-toc" aria-label="本页目录"><span>本页目录</span>{toc}</aside></div>
 <div class="copy-status" role="status" hidden></div>
 <script src="{prefix}doc-index.js" defer></script><script src="{prefix}assets/mermaid.min.js" defer></script>
@@ -196,7 +279,10 @@ def build_docs(root, output, packages, repository, revision):
             shutil.copyfile(root / asset, target)
     payload = json.dumps(search, ensure_ascii=False).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     (output / 'doc-index.js').write_text('window.AC_DOC_INDEX = ' + payload + ';\n', encoding='utf-8')
-    for name in ('docs.css', 'docs.js'):
+    for previous, current in DOCUMENT_REDIRECTS.items():
+        if previous in sources:
+            write_redirect(output, previous, current)
+    for name in ('docs.css', 'docs.js', 'redirect.js'):
         shutil.copyfile(root / 'site/assets' / name, output / 'assets' / name)
     for name in ('mermaid.min.js', 'mermaid-LICENSE.txt'):
         shutil.copyfile(root / 'site/vendor' / name, output / 'assets' / name)

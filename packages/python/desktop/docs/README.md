@@ -46,7 +46,7 @@ article_status: published
 
 ## 例子与验证
 
-以下命令从 `packages/python/desktop` 执行；仓库根目录也可使用 [统一 Demo 入口](../../../../demo/README.md)。场景选择见 [Wiki](../../../../wiki/Home.md)。
+以下命令从 `packages/python/desktop` 执行；仓库根目录也可使用 [统一 Demo 入口](../../../../demo/README.md)。场景选择见文档中心的[组合场景](../../../../docs/组合场景.md)。
 
 | 示例 | 运行方式 | 覆盖 |
 | --- | --- | --- |

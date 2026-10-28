@@ -85,3 +85,23 @@ flowchart LR
             (root / 'README.md').write_text('[Escape](../private.md)')
             with self.assertRaises(ValueError):
                 builder.render_markdown(root, 'README.md', {'README.md'}, 'https://github.com/test/repo/blob/main/')
+
+    def test_links_to_old_wiki_use_canonical_document_and_preserve_chapter(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'docs').mkdir()
+            (root / 'wiki').mkdir()
+            (root / 'wiki/Getting-Started.md').write_text('# Moved')
+            (root / 'docs/快速开始.md').write_text('# 快速开始\n\n## 安装与第一次调用')
+            (root / 'README.md').write_text('[Old](wiki/Getting-Started.md#安装与第一次调用)')
+            sources = {'README.md', 'wiki/Getting-Started.md', 'docs/快速开始.md'}
+            _, html, _, _, _ = builder.render_markdown(root, 'README.md', sources, 'https://github.com/test/repo/blob/main/')
+            self.assertIn('docs/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html#安装与第一次调用', html)
+            self.assertNotIn('wiki/Getting-Started.html', html)
+
+    def test_renamed_heading_alias_is_next_to_matching_chapter(self):
+        html = '<h1 id="文档中心">文档中心</h1><h2 id="快速开始">快速开始</h2>'
+        output = builder.legacy_anchors('docs/README.md', html)
+        self.assertIn('id="能力库-wiki"', output)
+        self.assertIn('id="从你的目标开始" class="legacy-anchor" aria-hidden="true"></span><h2 id="快速开始"', output)
+        self.assertEqual(builder.legacy_anchors('docs/README.md', output), output)

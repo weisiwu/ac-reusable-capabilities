@@ -30,6 +30,7 @@ jobs:
       - run: node --test site/tests/*.test.mjs
       - run: node --check site/assets/app.mjs
       - run: node --check site/assets/docs.js
+      - run: node --check site/assets/redirect.js
       - run: python site/build.py
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -2,7 +2,7 @@
 title: "Wiki 导航"
 category: "工程能力"
 tags: ["type/handbook", "能力复用"]
-summary: "仓库 Wiki 的页面导航。"
+summary: "旧 Wiki 入口已迁移至统一文档中心。"
 created: 2026-10-20
 updated: 2026-10-28
 metadata_status: reviewed
@@ -10,14 +10,6 @@ home_area: theme
 article_status: published
 ---
 
-# Wiki 导航
+# 文档已迁移
 
-- [首页](Home.md)
-- [上手步骤](Getting-Started.md)
-- [版本与兼容选择](Compatibility.md)
-- [能力地图](Capabilities.md)
-- [接入场景](Recipes.md)
-- [常见问题](Troubleshooting.md)
-- [贡献入口](Contributing.md)
-- [Demo](../demo/README.md)
-- [文档中心](../docs/README.md)
+「Wiki 导航」已归入统一文档中心。请阅读 [文档中心](../docs/README.md)。此处仅保留旧链接入口，不再维护独立正文。

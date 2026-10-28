@@ -16,11 +16,11 @@ article_status: published
 
 桌面基础能力包已收录到默认分支。包发布与接入项目验收分别进行，具体依据见包内验证记录。
 
-[功能展示与 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [在线 Wiki](https://weisiwu.github.io/ac-reusable-capabilities/wiki/Home.html) · [在线 Docs](https://weisiwu.github.io/ac-reusable-capabilities/docs/README.html)
+[功能展示与 Demo](https://weisiwu.github.io/ac-reusable-capabilities/) · [文档中心](https://weisiwu.github.io/ac-reusable-capabilities/docs/README.html)
 
-展示页负责功能效果和交互，Wiki 说明如何选择与组合，Docs 提供版本、依赖、兼容性、流程、属性和调用示例。文档网页随 Pages 从同一提交构建，是否已更新以部署记录与文档的源码提交为准。
+展示页负责功能效果和交互；文档中心统一提供快速开始、能力选择、组合场景、版本、依赖、兼容性及包内使用指南和接口契约。文档网页随 Pages 从同一提交构建，是否已更新以部署记录与文档的源码提交为准。
 
-仓库内阅读：[本地 Demo](demo/README.md) · [Wiki 源文档](wiki/Home.md) · [文档中心源文档](docs/README.md)
+仓库内阅读：[本地 Demo](demo/README.md) · [文档中心源文档](docs/README.md)
 
 ```bash
 # 在仓库根目录，使用 Python >= 3.11
