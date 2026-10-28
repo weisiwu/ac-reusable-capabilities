@@ -43,6 +43,7 @@ article_status: published
 | services | [使用指南](guides/services.md) | [公开契约](contracts/services.md) |
 | storage | [使用指南](guides/storage.md) | [公开契约](contracts/storage.md) |
 | table | [使用指南](guides/table.md) | [公开契约](contracts/table.md) |
+| transport | [使用指南](guides/transport.md) | [公开契约](contracts/transport.md) |
 
 ## 例子与验证
 
@@ -51,7 +52,7 @@ article_status: published
 | 示例 | 运行方式 | 覆盖 |
 | --- | --- | --- |
 | 组合入门 | `python examples/desktop_demo.py [--qt]` | CRUD、快照、服务、打印和可选 Qt |
-| 文档例子 | `python examples/check_contract_examples.py [--qt]` | 9 个核心／16 个全部模块 |
+| 文档例子 | `python examples/check_contract_examples.py [--qt]` | 18 个核心页内示例／32 个全部页内示例（指南和契约） |
 | 异常恢复 | `python examples/failure_scenarios.py` | 授权拒绝、迁移失败、恢复、串口短写、打印取消等 9 个场景 |
 | 后台搜索 | `python examples/background_search.py [--smoke]` | 请求代次、异步交付与安全退出 |
 | 桌面展示 | `python examples/qt_showcase.py [--smoke]` | 六个可交互页面；smoke 自动走查并退出 |

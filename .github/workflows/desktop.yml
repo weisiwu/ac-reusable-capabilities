@@ -36,6 +36,9 @@ jobs:
       - run: python demo/run.py desktop-core
       - if: matrix.extras == 'all'
         run: python packages/python/desktop/examples/desktop_demo.py --qt
+      - run: python packages/python/desktop/examples/check_contract_examples.py
+      - if: matrix.extras == 'all'
+        run: python packages/python/desktop/examples/check_contract_examples.py --qt
       - run: python demo/run.py desktop-contracts
       - if: matrix.extras == 'all'
         run: python demo/run.py desktop-contracts-qt
